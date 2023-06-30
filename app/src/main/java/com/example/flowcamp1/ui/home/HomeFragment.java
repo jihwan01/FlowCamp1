@@ -43,39 +43,18 @@ public class HomeFragment extends Fragment {
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
+        // 리사이클러뷰에 표시할 데이터 리스트 생성.
+        ArrayList<String> list = new ArrayList<>();
+        for (int i=0; i<100; i++) {
+            list.add(String.format("TEXT %d", i)) ;
+        }
+
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
-        binding.recycler1.setLayoutManager(new LinearLayoutManager(getActivity())) ;
+        binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
-        //아이템 추가
-        Resources res = getResources();
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-
-//        adapter.notifyDataSetChanged();
-//
         // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
-        RecyclerAdapter adapter = new RecyclerAdapter(mList) ;
-        binding.recycler1.setAdapter(mAdapter) ;
-
-
+        RecyclerAdapter adapter = new RecyclerAdapter(list) ;
+        binding.recycler1.setAdapter(adapter) ;
         return root;
     }
 
@@ -85,10 +64,10 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    public void addItem(Drawable faceImg, String name) {
+    public void addItem(String age, String name) {
         RecyclerItem item = new RecyclerItem();
 
-        item.setFaceImg(faceImg);
+        item.setAge(age);
         item.setName(name);
 
         mList.add(item);
