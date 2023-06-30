@@ -37,6 +37,23 @@ public class DashboardFragment extends Fragment {
         List<DashboardItem> itemList = new ArrayList<>();
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery);
         itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
+        itemList.add(new DashboardItem(bitmap));
 
         mAdapter = new DashboardAdapter(context, itemList);
         mGridView.setAdapter(mAdapter);
