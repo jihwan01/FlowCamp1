@@ -2,6 +2,8 @@ package com.example.flowcamp1.ui.home;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -50,12 +52,15 @@ public class HomeFragment extends Fragment {
 //            item.setText1(String.format("TEXT %d", i));
 //            mList.add(item) ;
 //        }
-        addItem("first");
-        addItem("first");
-        addItem("first");
-        addItem("first");
-        addItem("first");
-        addItem("first");
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery);
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
@@ -72,10 +77,10 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    public void addItem(String text1) {
+    public void addItem(Bitmap face, String name) {
         RecyclerItem item = new RecyclerItem();
-        item.setText1(text1);
-        item.setText2(text1);
+        item.setName(name);
+        item.setFace(face);
 //        item.setAge(age);
 //        item.setName(name);
 

@@ -1,23 +1,24 @@
 package com.example.flowcamp1.ui.home;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 public class RecyclerItem {
-    private String text1Str;
-    private String text2Str;
+    private Bitmap faceDrawable;
+    private String nameStr;
 
-    public void setText1(String text1){
-        text1Str = text1;
+    public void setName(String name){
+        nameStr = name;
     }
-    public void setText2(String text2){
-        text2Str = text2;
-    }
-
-    public String getText1() {
-        return this.text1Str;
+    public void setFace(Bitmap face){
+        faceDrawable = face;
     }
 
-    public String getText2() {
-        return this.text2Str;
+    public String getName() {
+        return this.nameStr;
+    }
+
+    public Bitmap getFace() {
+        return this.faceDrawable;
     }
 }
