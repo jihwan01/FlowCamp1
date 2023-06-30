@@ -24,12 +24,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView text1;
+        TextView text2;
 
         ViewHolder(View itemView) {
             super(itemView) ;
 
             // 뷰 객체에 대한 참조. (hold strong reference)
             text1 = itemView.findViewById(R.id.text1);
+            text2 = itemView.findViewById(R.id.text2);
         }
     }
 
@@ -53,6 +55,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //        holder.age.setText(item.getAge());
         RecyclerItem item = mData.get(position) ;
         holder.text1.setText(item.getText1()) ;
+        holder.text2.setText(item.getText2()) ;
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴.

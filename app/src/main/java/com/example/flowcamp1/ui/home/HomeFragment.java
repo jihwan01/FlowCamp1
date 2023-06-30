@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
         addItem("first");
         addItem("first");
         addItem("first");
-        addItem("first"); 
+        addItem("first");
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
@@ -75,6 +75,7 @@ public class HomeFragment extends Fragment {
     public void addItem(String text1) {
         RecyclerItem item = new RecyclerItem();
         item.setText1(text1);
+        item.setText2(text1);
 //        item.setAge(age);
 //        item.setName(name);
 
