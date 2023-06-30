@@ -3,22 +3,13 @@ package com.example.flowcamp1.ui.home;
 import android.graphics.drawable.Drawable;
 
 public class RecyclerItem {
-    private String nameStr;
-    private String ageStr;
+    private String text1Str;
 
-    public void setAge(String age){
-        ageStr = age;
+    public void setText1(String text1){
+        text1Str = text1;
     }
 
-    public void setName(String name){
-        nameStr = name;
-    }
-
-    public String getAge() {
-        return this.ageStr;
-    }
-
-    public String getName() {
-        return this.nameStr;
+    public String getText1() {
+        return this.text1Str;
     }
 }

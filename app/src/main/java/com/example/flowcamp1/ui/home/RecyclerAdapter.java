@@ -15,9 +15,9 @@ import com.example.flowcamp1.R;
 import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
-    private ArrayList<String> mData = null;
+    private ArrayList<RecyclerItem> mData = null;
     // 생성자에서 데이터 리스트 객체를 전달받음.
-    RecyclerAdapter(ArrayList<String> list) {
+    RecyclerAdapter(ArrayList<RecyclerItem> list) {
         mData = list;
     }
 
@@ -51,8 +51,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //        RecyclerItem item = mData.get(position);
 //        holder.name.setText(item.getName());
 //        holder.age.setText(item.getAge());
-        String text = mData.get(position) ;
-        holder.text1.setText(text) ;
+        RecyclerItem item = mData.get(position) ;
+        holder.text1.setText(item.getText1()) ;
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴.

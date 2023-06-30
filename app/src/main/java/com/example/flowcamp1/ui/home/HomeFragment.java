@@ -44,16 +44,24 @@ public class HomeFragment extends Fragment {
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         // 리사이클러뷰에 표시할 데이터 리스트 생성.
-        ArrayList<String> list = new ArrayList<>();
-        for (int i=0; i<100; i++) {
-            list.add(String.format("TEXT %d", i)) ;
-        }
+//        ArrayList<String> list = new ArrayList<>();
+//        for (int i=0; i<100; i++) {
+//            RecyclerItem item = new RecyclerItem();
+//            item.setText1(String.format("TEXT %d", i));
+//            mList.add(item) ;
+//        }
+        addItem("first");
+        addItem("first");
+        addItem("first");
+        addItem("first");
+        addItem("first");
+        addItem("first"); 
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
         // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
-        RecyclerAdapter adapter = new RecyclerAdapter(list) ;
+        RecyclerAdapter adapter = new RecyclerAdapter(mList) ;
         binding.recycler1.setAdapter(adapter) ;
         return root;
     }
@@ -64,11 +72,11 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    public void addItem(String age, String name) {
+    public void addItem(String text1) {
         RecyclerItem item = new RecyclerItem();
-
-        item.setAge(age);
-        item.setName(name);
+        item.setText1(text1);
+//        item.setAge(age);
+//        item.setName(name);
 
         mList.add(item);
     }
