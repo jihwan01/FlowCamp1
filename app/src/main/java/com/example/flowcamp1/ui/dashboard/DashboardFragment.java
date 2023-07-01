@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import com.example.flowcamp1.MainActivity;
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentDashboardBinding;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,25 +37,15 @@ public class DashboardFragment extends Fragment {
         mGridView = rootView.findViewById(R.id.gallery);
 
         List<DashboardItem> itemList = new ArrayList<>();
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery);
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
-        itemList.add(new DashboardItem(bitmap));
+
+
+        for(int i = 1; i <= 5; i++) {
+            Class<R.drawable> drawable = R.drawable.class;
+            String path = "pic" + Integer.toString(i);
+            int id = getResources().getIdentifier(path, "drawable", context.getPackageName());
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
+            itemList.add(new DashboardItem(bitmap));
+        }
 
         mAdapter = new DashboardAdapter(context, itemList);
         mGridView.setAdapter(mAdapter);
