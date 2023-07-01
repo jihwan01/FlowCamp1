@@ -2,6 +2,8 @@ package com.example.flowcamp1.ui.home;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -43,39 +45,36 @@ public class HomeFragment extends Fragment {
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
+        // 리사이클러뷰에 표시할 데이터 리스트 생성.
+//        ArrayList<String> list = new ArrayList<>();
+//        for (int i=0; i<100; i++) {
+//            RecyclerItem item = new RecyclerItem();
+//            item.setText1(String.format("TEXT %d", i));
+//            mList.add(item) ;
+//        }
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery);
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+
+
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
-        binding.recycler1.setLayoutManager(new LinearLayoutManager(getActivity())) ;
+        binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
-        //아이템 추가
-        Resources res = getResources();
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "first");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "second");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "third");
-        addItem(ResourcesCompat.getDrawable(res, R.drawable.gallery, null), "fourth");
-
-//        adapter.notifyDataSetChanged();
-//
         // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
         RecyclerAdapter adapter = new RecyclerAdapter(mList) ;
-        binding.recycler1.setAdapter(mAdapter) ;
-
-
+        binding.recycler1.setAdapter(adapter) ;
         return root;
     }
 
@@ -85,11 +84,10 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    public void addItem(Drawable faceImg, String name) {
+    public void addItem(Bitmap face, String name) {
         RecyclerItem item = new RecyclerItem();
-
-        item.setFaceImg(faceImg);
         item.setName(name);
+        item.setFace(face);
 
         mList.add(item);
     }
