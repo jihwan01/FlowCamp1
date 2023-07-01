@@ -52,21 +52,22 @@ public class HomeFragment extends Fragment {
 //            item.setText1(String.format("TEXT %d", i));
 //            mList.add(item) ;
 //        }
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery);
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
-        addItem(bitmap, "first");
+        Context context = requireContext(); // or getContext() if you're not using requireContext()
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.telephone);
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
+        addItem(drawable, "first");
 
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
@@ -84,7 +85,7 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    public void addItem(Bitmap face, String name) {
+    public void addItem(Drawable face, String name) {
         RecyclerItem item = new RecyclerItem();
         item.setName(name);
         item.setFace(face);

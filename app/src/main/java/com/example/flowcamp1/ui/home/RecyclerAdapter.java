@@ -54,7 +54,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //        holder.name.setText(item.getName());
 //        holder.age.setText(item.getAge());
         RecyclerItem item = mData.get(position) ;
-        holder.face.setImageBitmap(item.getFace()); ;
+        holder.face.setImageDrawable(item.getFace()); ;
         holder.name.setText(item.getName()) ;
     }
 

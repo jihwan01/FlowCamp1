@@ -4,13 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 public class RecyclerItem {
-    private Bitmap faceDrawable;
+    private Drawable faceDrawable;
     private String nameStr;
 
     public void setName(String name){
         nameStr = name;
     }
-    public void setFace(Bitmap face){
+    public void setFace(Drawable face){
         faceDrawable = face;
     }
 
@@ -18,7 +18,7 @@ public class RecyclerItem {
         return this.nameStr;
     }
 
-    public Bitmap getFace() {
+    public Drawable getFace() {
         return this.faceDrawable;
     }
 }
