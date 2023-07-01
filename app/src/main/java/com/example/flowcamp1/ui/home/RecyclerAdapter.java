@@ -2,11 +2,13 @@ package com.example.flowcamp1.ui.home;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +23,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         mData = list;
     }
 
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+    private OnItemClickListener onItemClickListener;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        onItemClickListener = listener;
+    }
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView name;
@@ -53,6 +63,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //        RecyclerItem item = mData.get(position);
 //        holder.name.setText(item.getName());
 //        holder.age.setText(item.getAge());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("TAG", "Item in recycler view is clicked!!");
+                if(onItemClickListener != null) {
+                    onItemClickListener.onItemClick(position);
+                }else{
+                    Log.d("TAG", "Item click listener is null");
+                }
+            }
+        });
         RecyclerItem item = mData.get(position) ;
         holder.face.setImageDrawable(item.getFace()); ;
         holder.name.setText(item.getName()) ;

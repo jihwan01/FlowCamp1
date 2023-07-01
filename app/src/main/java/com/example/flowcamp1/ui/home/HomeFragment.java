@@ -6,10 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -26,7 +28,7 @@ import com.example.flowcamp1.databinding.FragmentHomeBinding;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements  RecyclerAdapter.OnItemClickListener {
 
     private FragmentHomeBinding binding;
     RecyclerView mRecyclerView = null;
@@ -54,20 +56,20 @@ public class HomeFragment extends Fragment {
 //        }
         Context context = requireContext(); // or getContext() if you're not using requireContext()
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.telephone);
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
-        addItem(drawable, "first");
+        addItem(drawable, "1");
+        addItem(drawable, "2");
+        addItem(drawable, "3");
+        addItem(drawable, "4");
+        addItem(drawable, "5");
+        addItem(drawable, "6");
+        addItem(drawable, "7");
+        addItem(drawable, "8");
+        addItem(drawable, "9");
+        addItem(drawable, "10");
+        addItem(drawable, "11");
+        addItem(drawable, "12");
+        addItem(drawable, "13");
+        addItem(drawable, "14");
 
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
@@ -75,6 +77,7 @@ public class HomeFragment extends Fragment {
 
         // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
         RecyclerAdapter adapter = new RecyclerAdapter(mList) ;
+        adapter.setOnItemClickListener(this);
         binding.recycler1.setAdapter(adapter) ;
         return root;
     }
@@ -91,5 +94,15 @@ public class HomeFragment extends Fragment {
         item.setFace(face);
 
         mList.add(item);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        // TODO : Handle the item click event
+
+        Log.d("TAG", "Run OnItemClick " + mList.get(position).getName());
+
+//        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.puzzle);
+//        addItem(drawable, "first");
     }
 }
