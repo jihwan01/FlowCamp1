@@ -60,6 +60,13 @@ public class HomeFragment extends Fragment {
         addItem(bitmap, "first");
         addItem(bitmap, "first");
         addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
+        addItem(bitmap, "first");
 
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
@@ -81,8 +88,6 @@ public class HomeFragment extends Fragment {
         RecyclerItem item = new RecyclerItem();
         item.setName(name);
         item.setFace(face);
-//        item.setAge(age);
-//        item.setName(name);
 
         mList.add(item);
     }
