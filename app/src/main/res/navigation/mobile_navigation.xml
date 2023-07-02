@@ -15,7 +15,9 @@
         android:id="@+id/navigation_dashboard"
         android:name="com.example.flowcamp1.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:color="@color/black"
+        tools:layout="@layout/fragment_dashboard"
+        />
 
     <fragment
         android:id="@+id/navigation_notifications"
