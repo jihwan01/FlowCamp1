@@ -6,16 +6,24 @@ import android.graphics.drawable.Drawable;
 public class RecyclerItem {
     private Drawable faceDrawable;
     private String nameStr;
+    private String phoneNumStr;
 
     public void setName(String name){
-        nameStr = name;
+        this.nameStr = name;
     }
     public void setFace(Drawable face){
-        faceDrawable = face;
+        this.faceDrawable = face;
+    }
+
+    public void setPhoneNum(String phoneNum){
+        this.phoneNumStr = phoneNum;
     }
 
     public String getName() {
         return this.nameStr;
+    }
+    public String getPhoneNum() {
+        return this.phoneNumStr;
     }
 
     public Drawable getFace() {

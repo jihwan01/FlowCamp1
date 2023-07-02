@@ -52,16 +52,15 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         binding = FragmentContactsListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        Context context = requireContext(); // or getContext() if you're not using requireContext()
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.telephone);
-        addItem(drawable, "1");
-        addItem(drawable, "2");
-        addItem(drawable, "3");
-        addItem(drawable, "4");
-        addItem(drawable, "5");
-        addItem(drawable, "6");
-        addItem(drawable, "7");
-
+        Context context = requireContext();
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
+        addItem(drawable, "1", "010-1111-1111");
+        addItem(drawable, "2", "010-2222-2222");
+        addItem(drawable, "3", "010-3333-3333");
+        addItem(drawable, "4", "010-4444-4444");
+        addItem(drawable, "5", "010-5555-5555");
+        addItem(drawable, "6", "010-6666-6666");
+        addItem(drawable, "7", "010-7777-7777");
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
@@ -83,9 +82,10 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         binding = null;
     }
 
-    public void addItem(Drawable face, String name) {
+    public void addItem(Drawable face, String name, String phoneNum) {
         RecyclerItem item = new RecyclerItem();
         item.setName(name);
+        item.setPhoneNum(phoneNum);
         item.setFace(face);
 
         mList.add(item);
@@ -97,7 +97,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(mList.get(position).getName()));
+        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(mList.get(position).getFace(), mList.get(position).getName(), mList.get(position).getPhoneNum()));
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         Log.d("TAG", "Clicked Item : " + mList.get(position).getName());
@@ -111,7 +111,9 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment("홍길동"));
+        Context context = requireContext(); // or getContext() if you're not using requireContext()
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
+        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(drawable, "홍길동", "010-0000-0000"));
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 

@@ -1,5 +1,6 @@
 package com.example.flowcamp1.ui.home;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,17 +21,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentContactsProfileBinding;
 
+import org.w3c.dom.Text;
+
 
 public class ContactsProfileFragment extends Fragment {
     private String nameStr;
+    private String phoneNumStr;
+    private Drawable faceDrawable;
     private FragmentContactsProfileBinding binding;
-    public ContactsProfileFragment(String name) {
+    public ContactsProfileFragment(Drawable face, String name, String phoneNum) {
+        this.faceDrawable = face;
         this.nameStr = name;
+        this.phoneNumStr = phoneNum;
     }
 
     @Override
@@ -43,13 +51,12 @@ public class ContactsProfileFragment extends Fragment {
         View view = binding.getRoot();
 
         TextView nameText = binding.profileName;
+        TextView phoneNumText = binding.profileNumber;
+        ImageView faceImage = binding.profilePic;
+        faceImage.setImageDrawable(faceDrawable);
         nameText.setText(nameStr);
-        // Custom ActionBar를 설정합니다.
-//        androidx.appcompat.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-//        if (actionBar != null) {
-//            Log.d("TAG", "Action Bar is not null!!!!!");
-//        }
-        // Inflate the layout for this fragment
+        phoneNumText.setText(phoneNumStr);
+
         return view;
     }
 
