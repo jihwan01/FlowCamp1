@@ -1,6 +1,8 @@
 package com.example.flowcamp1;
 
+import android.app.ActionBar;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -33,5 +35,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        return false;
+    }
 }
