@@ -51,4 +51,6 @@ public class HomeFragment extends Fragment{
         Log.d("TAG", "Destroy!!!!");
         binding = null;
     }
+
+
 }

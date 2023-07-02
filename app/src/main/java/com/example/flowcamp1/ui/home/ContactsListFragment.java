@@ -5,24 +5,29 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuHost;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentContactsListBinding;
-import com.example.flowcamp1.databinding.FragmentHomeBinding;
-import com.example.flowcamp1.ui.dashboard.DashboardFragment;
 
 import java.util.ArrayList;
 
@@ -34,17 +39,18 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     RecyclerAdapter mAdapter = null;
     ArrayList<RecyclerItem> mList = new ArrayList<RecyclerItem>();
 
+    public ContactsListFragment() {
+        // Required empty public constructor
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        MenuHost menuhost = requireActivity();
+        initMenu(menuhost);
 
         binding = FragmentContactsListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         Context context = requireContext(); // or getContext() if you're not using requireContext()
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.telephone);
@@ -71,7 +77,9 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     public void onDestroyView() {
 
         super.onDestroyView();
-        Log.d("TAG", "Destroy!!!!");
+        Log.d("TAG", "Destroy List Fragment!!");
+        Log.d("TAG", "This is the size of mlist : " + mList.size());
+
         binding = null;
     }
 
@@ -89,11 +97,47 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new DashboardFragment());
+        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(mList.get(position).getName()));
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         Log.d("TAG", "Clicked Item : " + mList.get(position).getName());
 
 //        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.puzzle);
 //        addItem(drawable, "first");
+    }
+
+    private void onAddClick() {
+        // TODO : Handle the item click event
+
+        FragmentManager fm = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment("홍길동"));
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+
+//        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.puzzle);
+//        addItem(drawable, "first");
+    }
+
+
+    private void initMenu(MenuHost menuhost){
+        menuhost.addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                androidx.appcompat.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                actionBar.setDisplayHomeAsUpEnabled(false);
+                actionBar.setTitle("Contacts");
+                menuInflater.inflate(R.menu.contacts_list_menu, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem){
+
+                if (menuItem.getItemId() == R.id.item_add_button){
+                    onAddClick();
+                }
+                return true;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 }
