@@ -24,17 +24,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuHost;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.flowcamp1.MainActivity;
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentDashboardBinding;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +48,8 @@ public class DashboardFragment extends Fragment {
 
     public GridView mGridView;
     public DashboardAdapter mAdapter;
+
+    List<DashboardItem> itemList = new ArrayList<>();
 
     private void getGalleryPermission(Activity activity, Context context) {
         String temp = "";
@@ -73,9 +80,6 @@ public class DashboardFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_dashboard, container, false);
         mGridView = rootView.findViewById(R.id.gallery);
 
-        List<DashboardItem> itemList = new ArrayList<>();
-
-
         for(int i = 1; i <= 5; i++) {
             Class<R.drawable> drawable = R.drawable.class;
             String path = "pic" + Integer.toString(i);
@@ -87,35 +91,54 @@ public class DashboardFragment extends Fragment {
         mAdapter = new DashboardAdapter(context, itemList);
         mGridView.setAdapter(mAdapter);
 
-        setHasOptionsMenu(true);
+        MenuHost menuhost = requireActivity();
+        initMenu(menuhost);
         return rootView;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_gallery, menu);
+    private void initMenu(MenuHost menuhost){
+        menuhost.addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_gallery, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem){
+
+                if (menuItem.getItemId() == R.id.gallery_add){
+                    Activity activity = getActivity();
+                    Context context = getContext();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setMessage("사진 추가하기");
+
+                    builder.setPositiveButton("갤러리에서 가져오기", (dialog, which) -> {
+                        getGalleryPermission(activity, context);
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+                        launcher.launch(intent);
+                    });
+
+                    builder.create().show();
+                }
+                return true;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        if (item.getItemId() == R.id.gallery_add){
-            Activity activity = getActivity();
-            Context context = getContext();
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            Log.v("TEST", builder+".");
-            builder.setMessage("사진 추가하기");
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        Intent data = result.getData();
+        try {
+            InputStream stream = getContext().getContentResolver().openInputStream(data.getData());
+            Bitmap bitmap = BitmapFactory.decodeStream(stream);
+            stream.close();
+            mAdapter.setBitmap(bitmap);
+            mAdapter.notifyDataSetChanged();
 
-            builder.setPositiveButton("갤러리에서 가져오기", (dialog, which) ->{
-                getGalleryPermission(activity, context);
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, 101);
-            });
-
-            builder.create().show();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return super.onOptionsItemSelected(item);
-    }
+    });
 }
