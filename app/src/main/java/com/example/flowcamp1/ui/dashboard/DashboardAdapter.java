@@ -63,5 +63,5 @@ public class DashboardAdapter extends BaseAdapter {
     public Bitmap getBitmap(int pos){
         return this.mItem.get(pos).getImageId();
     }
-
+    public void delBitmap(int pos) { this.mItem.remove(pos); }
 }
