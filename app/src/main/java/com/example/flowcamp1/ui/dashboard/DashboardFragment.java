@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import com.example.flowcamp1.MainActivity;
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentDashboardBinding;
 
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -112,13 +114,20 @@ public class DashboardFragment extends Fragment {
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setMessage("사진 추가하기");
 
+                    builder.setNegativeButton("카메라로 촬영하기", (dialog, which)-> {
+                        getCameraPermission(activity, context);
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                        cameralauncher.launch(intent);
+                    });
+
                     builder.setPositiveButton("갤러리에서 가져오기", (dialog, which) -> {
                         getGalleryPermission(activity, context);
                         Intent intent = new Intent();
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
 
-                        launcher.launch(intent);
+                        gallerylauncher.launch(intent);
                     });
 
                     builder.create().show();
@@ -128,12 +137,25 @@ public class DashboardFragment extends Fragment {
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
-    ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    ActivityResultLauncher<Intent> gallerylauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         Intent data = result.getData();
         try {
             InputStream stream = getContext().getContentResolver().openInputStream(data.getData());
             Bitmap bitmap = BitmapFactory.decodeStream(stream);
             stream.close();
+            mAdapter.setBitmap(bitmap);
+            mAdapter.notifyDataSetChanged();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    });
+
+    ActivityResultLauncher<Intent> cameralauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        Intent data = result.getData();
+        try {
+            Bundle extras = data.getExtras();
+            Bitmap bitmap = (Bitmap) extras.get("data");
             mAdapter.setBitmap(bitmap);
             mAdapter.notifyDataSetChanged();
 
