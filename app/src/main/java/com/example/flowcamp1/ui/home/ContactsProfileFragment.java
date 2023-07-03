@@ -44,11 +44,16 @@ import java.io.InputStream;
 
 
 public class ContactsProfileFragment extends Fragment {
+    private ContactsListFragment contactsListFragment;
+    private String idStr;
     private String nameStr;
     private String phoneNumStr;
     private Drawable faceDrawable;
+
     private FragmentContactsProfileBinding binding;
-    public ContactsProfileFragment(Drawable face, String name, String phoneNum) {
+    public ContactsProfileFragment(ContactsListFragment contactsListFragment, String id, Drawable face, String name, String phoneNum) {
+        this.contactsListFragment = contactsListFragment;
+        this.idStr = id;
         this.faceDrawable = face;
         this.nameStr = name;
         this.phoneNumStr = phoneNum;
@@ -86,6 +91,7 @@ public class ContactsProfileFragment extends Fragment {
                         Drawable drawable = getDrawableFromUri(selectedImageUri);
                         binding.profilePic.setImageDrawable(drawable);
                         // TODO: 가져온 이미지에 대해서 실제 연락처 상의 데이터를 수정해야함.
+                        contactsListFragment.ModifyFace(idStr, drawable);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

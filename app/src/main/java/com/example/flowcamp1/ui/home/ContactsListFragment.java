@@ -1,19 +1,26 @@
 package com.example.flowcamp1.ui.home;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuHost;
@@ -22,7 +29,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,11 +40,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentContactsListBinding;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 
@@ -57,7 +64,41 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     public ContactsListFragment() {
         // Required empty public constructor
     }
+    private ActivityResultLauncher<String> requestContactsReadPermissionLauncher;
+    private ActivityResultLauncher<String> requestContactsWritePermissionLauncher;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
+        // 퍼미션 요청 결과 처리를 위한 ActivityResultLauncher 초기화
+        requestContactsReadPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // 퍼미션이 승인된 경우 List Load
+                Log.d("Permission", "Permission Request is Granted!!");
+                Toast.makeText(getActivity(), "Permission Request is Granted!!", Toast.LENGTH_SHORT).show();
+                readContacts();
+            } else {
+                // 퍼미션이 거부된 경우에 대한 처리
+                // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                Log.d("Contacts Permission", "Read Permission Request is denied!!");
+            }
+        });
+
+        // 퍼미션 요청 결과 처리를 위한 ActivityResultLauncher 초기화
+        requestContactsWritePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // 퍼미션이 승인된 경우 List Load
+                Log.d("Permission", "Permission Request is Granted!!");
+
+            } else {
+                // 퍼미션이 거부된 경우에 대한 처리
+                // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                Log.d("Contacts Permission", "Write Permission Request is denied!!");
+            }
+        });
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         this.activity = requireActivity();
@@ -68,19 +109,25 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         binding = FragmentContactsListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        if(!initialized){
-            requestContactsPermission();
-            readContacts();
-            initialized = true;
-        }
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
+        if(!initialized){
+            requestContactsReadPermission();
+            requestContactsWritePermission();
+        }else {
+            // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
+            Toast.makeText(getActivity(), "This is the length of mList : " + mList.size(), Toast.LENGTH_SHORT).show();
+            if(mAdapter != null){
+                binding.recycler1.setAdapter(mAdapter);
+            }
+//            mAdapter = new RecyclerAdapter(mList) ;
+//            mAdapter.setOnItemClickListener(this);
+            Toast.makeText(getActivity(), "Already Initialized!!", Toast.LENGTH_SHORT).show();
+        }
 
-        // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
-        RecyclerAdapter adapter = new RecyclerAdapter(mList) ;
-        adapter.setOnItemClickListener(this);
-        binding.recycler1.setAdapter(adapter) ;
+
+
         return root;
     }
 
@@ -94,19 +141,46 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         binding = null;
     }
 
-    public void addItem(Drawable face, String name, String phoneNum) {
+    public void addItem(String id, Drawable face, String name, String phoneNum) {
         RecyclerItem item = new RecyclerItem();
+        item.setId(id);
+        item.setFace(face);
         item.setName(name);
         item.setPhoneNum(phoneNum);
-        item.setFace(face);
 
         mList.add(item);
     }
 
-    public void ModifyItem(int position, Drawable face) {
-        mList.get(position).setFace(face);
+    public void ModifyFace(String id, Drawable newFace){
 
+        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(id));
+        Toast.makeText(getActivity(), "Modify face image!", Toast.LENGTH_SHORT).show();
+        // ContentResolver를 사용하여 프로필 사진 업데이트
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Contacts.Photo.PHOTO, drawableToByteArray(newFace)); // Drawable을 바이트 배열로 변환하여 저장
+        writeContacts(contactUri, values);
     }
+
+    public byte[] drawableToByteArray(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return bitmapToByteArray(((BitmapDrawable) drawable).getBitmap());
+        }
+
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmapToByteArray(bitmap);
+    }
+
+    public byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        return outputStream.toByteArray();
+    }
+
 
     @Override
     public void onItemClick(int position) {
@@ -114,7 +188,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(mList.get(position).getFace(), mList.get(position).getName(), mList.get(position).getPhoneNum()));
+        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(this, mList.get(position).getId(), mList.get(position).getFace(), mList.get(position).getName(), mList.get(position).getPhoneNum()));
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         Log.d("TAG", "Clicked Item : " + mList.get(position).getName());
@@ -126,12 +200,12 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     private void onAddClick() {
         // TODO : Handle the item click event
 
-        FragmentManager fm = getParentFragmentManager();
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
-        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(drawable, "홍길동", "010-0000-0000"));
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+//        FragmentManager fm = getParentFragmentManager();
+//        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+//        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
+//        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(drawable, "홍길동", "010-0000-0000"));
+//        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.commit();
 
     }
 
@@ -159,6 +233,8 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     }
 
     public void readContacts(){
+
+        Toast.makeText(getActivity(), "Read Contacts", Toast.LENGTH_SHORT).show();
         ContentResolver contentResolver = activity.getContentResolver();
         String[] projection = {ContactsContract.CommonDataKinds.Phone.CONTACT_ID
                 ,  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
@@ -215,22 +291,43 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
                 // 이름과 전화번호를 사용하여 원하는 작업 수행
                 Log.d("Contact", "Name: " + name + ", Phone Number: " + number);
-                addItem(faceDrawable, name, number);
+                addItem(id, faceDrawable, name, number);
             }
             cursor.close();
         }
+        // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
+        Toast.makeText(getActivity(), "This is the length of mList : " + mList.size(), Toast.LENGTH_SHORT).show();
+        mAdapter = new RecyclerAdapter(mList) ;
+        mAdapter.setOnItemClickListener(this);
+        binding.recycler1.setAdapter(mAdapter);
+        initialized = true;
     }
 
-    private static final int PERMISSION_REQUEST_CODE = 100;
-    private void requestContactsPermission() {
-        String[] permissions = {Manifest.permission.READ_CONTACTS};
 
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            activity.requestPermissions(permissions, PERMISSION_REQUEST_CODE);
+    public void writeContacts(Uri contactUri, ContentValues values){
+        context.getContentResolver().update(contactUri, values, null, null);
+    }
+    private void requestContactsReadPermission() {
+        // 퍼미션을 이미 가지고 있는지 확인
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            // 이미 퍼미션이 승인된 경우 갤러리에서 사진을 선택하도록 호출
+            readContacts();
         } else {
-            // 권한이 이미 허용된 상태이므로 주소록 접근 작업 수행
+            // 퍼미션을 요청
+            Log.d("GALLERY", "Please grant the permission!!");
+            requestContactsReadPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
+        }
+    }
 
+    private void requestContactsWritePermission() {
+        // 퍼미션을 이미 가지고 있는지 확인
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            // 퍼미션을 이미 가지고 있는 경우 Contacts 쓰는 코드 호출
+
+        } else {
+            // 퍼미션을 요청
+            Log.d("GALLERY", "Please grant the Write permission!!");
+            requestContactsWritePermissionLauncher.launch(Manifest.permission.WRITE_CONTACTS);
         }
     }
 }
