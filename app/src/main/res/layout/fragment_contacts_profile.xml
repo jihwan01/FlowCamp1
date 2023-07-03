@@ -24,7 +24,17 @@
         android:gravity="center"
         android:layout_gravity="center"
         />
-
+    <EditText
+        android:id="@+id/profile_name_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="홍길동"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        />
     <TextView
         android:id="@+id/profile_number"
         android:layout_width="wrap_content"

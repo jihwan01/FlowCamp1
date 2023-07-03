@@ -3,6 +3,7 @@ package com.example.flowcamp1.ui.home;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -151,6 +152,31 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         mList.add(item);
     }
 
+    public void ChangeName(String id, String name){
+        ContentResolver contentResolver = activity.getContentResolver();
+        // 연락처 RawContact URI 생성
+        String selection = ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
+        String[] selectionArgs = new String[]{id, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE};
+
+        // 변경할 데이터 설정
+        ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(selection, selectionArgs)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name);
+
+        // 변경 작업을 수행할 ArrayList 생성
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+        operations.add(builder.build());
+
+        // 연락처 일괄 업데이트
+        try {
+            contentResolver.applyBatch(ContactsContract.AUTHORITY, operations);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 업데이트 실패 처리
+        }
+        initialized = false;
+    }
+
     public void ModifyFace(String id, Drawable newFace){
 
         Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(id));
@@ -233,7 +259,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     }
 
     public void readContacts(){
-
+        mList.clear();
         Toast.makeText(getActivity(), "Read Contacts", Toast.LENGTH_SHORT).show();
         ContentResolver contentResolver = activity.getContentResolver();
         String[] projection = {ContactsContract.CommonDataKinds.Phone.CONTACT_ID

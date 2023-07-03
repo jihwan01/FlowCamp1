@@ -2,6 +2,7 @@ package com.example.flowcamp1.ui.home;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -23,12 +24,16 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -115,6 +120,37 @@ public class ContactsProfileFragment extends Fragment {
         View view = binding.getRoot();
 
         TextView nameText = binding.profileName;
+        final EditText editText = binding.profileNameEdit;
+        nameText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nameText.setVisibility(View.GONE);
+                editText.setVisibility(View.VISIBLE);
+                editText.setText(nameText.getText());
+                editText.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
+
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    Toast.makeText(getActivity(), "Permission Request is Granted!!", Toast.LENGTH_SHORT).show();
+                    String newName = editText.getText().toString();
+                    nameText.setText(newName);
+                    nameText.setVisibility(View.VISIBLE);
+                    editText.setVisibility(View.GONE);
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                    contactsListFragment.ChangeName(idStr, newName);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         TextView phoneNumText = binding.profileNumber;
         ImageView faceImage = binding.profilePic;
         faceImage.setImageDrawable(faceDrawable);
