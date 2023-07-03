@@ -1,7 +1,16 @@
 package com.example.flowcamp1.ui.home;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,28 +49,32 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     RecyclerAdapter mAdapter = null;
     ArrayList<RecyclerItem> mList = new ArrayList<RecyclerItem>();
 
+    Activity activity;
+    Context context;
+
+
     public ContactsListFragment() {
         // Required empty public constructor
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
+        this.activity = requireActivity();
+        this.context = getContext();
         MenuHost menuhost = requireActivity();
         initMenu(menuhost);
 
         binding = FragmentContactsListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        Context context = requireContext();
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
-        addItem(drawable, "1", "010-1111-1111");
-        addItem(drawable, "2", "010-2222-2222");
-        addItem(drawable, "3", "010-3333-3333");
-        addItem(drawable, "4", "010-4444-4444");
-        addItem(drawable, "5", "010-5555-5555");
-        addItem(drawable, "6", "010-6666-6666");
-        addItem(drawable, "7", "010-7777-7777");
+//        addItem(drawable, "1", "010-1111-1111");
+//        addItem(drawable, "2", "010-2222-2222");
+//        addItem(drawable, "3", "010-3333-3333");
+//        addItem(drawable, "4", "010-4444-4444");
+//        addItem(drawable, "5", "010-5555-5555");
+//        addItem(drawable, "6", "010-6666-6666");
+//        addItem(drawable, "7", "010-7777-7777");
 
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
@@ -111,7 +125,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        Context context = requireContext(); // or getContext() if you're not using requireContext()
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
         fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(drawable, "홍길동", "010-0000-0000"));
         fragmentTransaction.addToBackStack(null);
@@ -126,9 +139,11 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         menuhost.addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                androidx.appcompat.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                androidx.appcompat.app.ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
                 actionBar.setDisplayHomeAsUpEnabled(false);
                 actionBar.setTitle("Contacts");
+                requestContactsPermission();
+                readContacts();
                 menuInflater.inflate(R.menu.contacts_list_menu, menu);
             }
 
@@ -141,5 +156,81 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
                 return true;
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+    }
+
+    public void readContacts(){
+        ContentResolver contentResolver = activity.getContentResolver();
+        String[] projection = {ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+                ,  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+                ,  ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.Contacts.PHOTO_URI};
+
+
+        Cursor cursor = contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                int idIndex = cursor.getColumnIndex(projection[0]);
+                int nameIndex = cursor.getColumnIndex(projection[1]);
+                int numberIndex = cursor.getColumnIndex(projection[2]);
+                int photoIndex = cursor.getColumnIndex(projection[3]);
+                // 4.2 해당 index 를 사용해서 실제 값을 가져온다.
+                String id = cursor.getString(idIndex);
+                String name = cursor.getString(nameIndex);
+                String number = cursor.getString(numberIndex);
+                String photoUriStr = cursor.getString(photoIndex);
+
+                Bitmap photoBitmap = null;
+                if (photoUriStr != null) {
+                    try {
+                        photoBitmap = BitmapFactory.decodeStream(
+                                activity.getContentResolver().openInputStream(Uri.parse(photoUriStr))
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Log.d("Contact", "Name: " + name + ", Phone Number: " + number);
+                Drawable faceDrawable;
+                if (photoBitmap != null) {
+                    // 사진 사용
+                    // ...
+                    faceDrawable = new BitmapDrawable(getResources(), photoBitmap);
+                } else {
+                    // 기본 이미지 사용 또는 처리
+                    // ...
+                    faceDrawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
+                }
+                if(number.length() == 11){
+                    String newNumberStr = number.substring(0,3) + "-" + number.substring(3,7) + "-" + number.substring(7);
+                    number = newNumberStr;
+                }
+
+                // 이름과 전화번호를 사용하여 원하는 작업 수행
+                Log.d("Contact", "Name: " + name + ", Phone Number: " + number);
+                addItem(faceDrawable, name, number);
+            }
+            cursor.close();
+        }
+    }
+
+    private static final int PERMISSION_REQUEST_CODE = 100;
+    private void requestContactsPermission() {
+        String[] permissions = {Manifest.permission.READ_CONTACTS};
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            activity.requestPermissions(permissions, PERMISSION_REQUEST_CODE);
+        } else {
+            // 권한이 이미 허용된 상태이므로 주소록 접근 작업 수행
+
+        }
     }
 }
