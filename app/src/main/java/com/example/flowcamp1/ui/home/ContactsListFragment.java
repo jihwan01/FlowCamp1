@@ -173,6 +173,35 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         } catch (Exception e) {
             e.printStackTrace();
             // 업데이트 실패 처리
+            Toast.makeText(getActivity(), "이름 수정 실패", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        initialized = false;
+    }
+
+    public void ChangeNum(String id, String num){
+        String newNum = num.replaceAll("\\D", "");
+        ContentResolver contentResolver = activity.getContentResolver();
+        // 연락처 RawContact URI 생성
+        String selection = ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
+        String[] selectionArgs = new String[]{id, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE};
+
+        // 변경할 데이터 설정
+        ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(selection, selectionArgs)
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, newNum);
+
+        // 변경 작업을 수행할 ArrayList 생성
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+        operations.add(builder.build());
+
+        // 연락처 일괄 업데이트
+        try {
+            contentResolver.applyBatch(ContactsContract.AUTHORITY, operations);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 업데이트 실패 처리
+            Toast.makeText(getActivity(), "전화번호 수정 실패", Toast.LENGTH_SHORT).show();
         }
         initialized = false;
     }
