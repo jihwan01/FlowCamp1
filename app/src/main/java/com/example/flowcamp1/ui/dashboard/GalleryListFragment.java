@@ -35,12 +35,15 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.flowcamp1.MainActivity;
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentDashboardBinding;
+import com.example.flowcamp1.ui.home.ContactsProfileFragment;
 
 import java.io.File;
 import java.io.InputStream;
@@ -87,6 +90,8 @@ public class GalleryListFragment extends Fragment {
         bindGrid(inflater, container, context);
 
         bindDelete();
+
+        bindView();
 
         return rootView;
     }
@@ -198,7 +203,6 @@ public class GalleryListFragment extends Fragment {
         mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> a_parent, View v, int pos, long id){
-                Log.v("test", "click");
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage("사진 삭제하기");
 
@@ -220,7 +224,14 @@ public class GalleryListFragment extends Fragment {
     private void bindView(){
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.replace(R.id.gallery_fragment_container, new GalleryImageFragment(pos, mAdapter));
+                Log.d("test",pos+".");
+                fragmentTransaction.addToBackStack(null);
+
+                fragmentTransaction.commit();
             }
         });
     }

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.dashboard.DashboardFragment">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainer"
+        android:id="@+id/gallery_fragment_container"
         android:name="com.example.flowcamp1.ui.dashboard.GalleryListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
