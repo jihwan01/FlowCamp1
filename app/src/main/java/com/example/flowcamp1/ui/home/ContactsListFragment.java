@@ -74,15 +74,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             initialized = true;
         }
 
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
-//        addItem(drawable, "1", "010-1111-1111");
-//        addItem(drawable, "2", "010-2222-2222");
-//        addItem(drawable, "3", "010-3333-3333");
-//        addItem(drawable, "4", "010-4444-4444");
-//        addItem(drawable, "5", "010-5555-5555");
-//        addItem(drawable, "6", "010-6666-6666");
-//        addItem(drawable, "7", "010-7777-7777");
-
         // 리사이클러뷰에 LinearLayoutManager 객체 지정.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
@@ -110,6 +101,11 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         item.setFace(face);
 
         mList.add(item);
+    }
+
+    public void ModifyItem(int position, Drawable face) {
+        mList.get(position).setFace(face);
+
     }
 
     @Override
