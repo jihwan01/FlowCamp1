@@ -52,6 +52,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     Activity activity;
     Context context;
 
+    boolean initialized = false;
 
     public ContactsListFragment() {
         // Required empty public constructor
@@ -66,6 +67,12 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
         binding = FragmentContactsListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        if(!initialized){
+            requestContactsPermission();
+            readContacts();
+            initialized = true;
+        }
 
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
 //        addItem(drawable, "1", "010-1111-1111");
@@ -130,8 +137,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
-//        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.puzzle);
-//        addItem(drawable, "first");
     }
 
 
@@ -142,8 +147,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
                 androidx.appcompat.app.ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
                 actionBar.setDisplayHomeAsUpEnabled(false);
                 actionBar.setTitle("Contacts");
-                requestContactsPermission();
-                readContacts();
+
                 menuInflater.inflate(R.menu.contacts_list_menu, menu);
             }
 
