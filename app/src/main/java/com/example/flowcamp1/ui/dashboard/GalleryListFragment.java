@@ -114,16 +114,9 @@ public class GalleryListFragment extends Fragment {
 
     ActivityResultLauncher<Intent> gallerylauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         Intent data = result.getData();
-        try {
-            InputStream stream = getContext().getContentResolver().openInputStream(data.getData());
-            Bitmap bitmap = BitmapFactory.decodeStream(stream);
-            stream.close();
-            saveBitmapToFile(bitmap, "pic" + bitmap.hashCode());
-            mAdapter.setBitmap(bitmap, "pic" + bitmap.hashCode());
-            mAdapter.notifyDataSetChanged();
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (data != null && data.getData() != null) {
+            Uri imageUri = data.getData();
+            mAdapter.setBitmap(getContext(), imageUri);
         }
     });
 
@@ -138,41 +131,8 @@ public class GalleryListFragment extends Fragment {
 
     ActivityResultLauncher<Intent> cameralauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         Intent data = result.getData();
-        try {
-            //Bundle extras = data.getExtras();
-            //Bitmap bitmap = (Bitmap) extras.get("data");
-            InputStream stream = getContext().getContentResolver().openInputStream(currentPhotoUri);
-            Log.v("test", "2-1");
-            Bitmap bitmap = BitmapFactory.decodeStream(stream);
-            Log.v("test", "2-2");
-            saveBitmapToFile(bitmap, "pic" + bitmap.hashCode());
-            mAdapter.setBitmap(bitmap, "pic" + bitmap.hashCode());
-            mAdapter.notifyDataSetChanged();
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        mAdapter.setBitmap(getContext(), currentPhotoUri);
     });
-
-    private void saveBitmapToFile(Bitmap bitmap, String filename) {
-        Context context = getContext();
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + filename + ".png");
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            Log.v("test", Environment.DIRECTORY_PICTURES);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
 
     private void initMenu(MenuHost menuhost){
@@ -246,6 +206,22 @@ public class GalleryListFragment extends Fragment {
         mGridView = rootView.findViewById(R.id.gallery);
 
         Field[] fields = R.drawable.class.getFields();
+        for (Field field: fields){
+            String path = field.getName();
+            if (path.startsWith("pic")) {
+                int id = getResources().getIdentifier(path, "drawable", context.getPackageName());
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
+                itemList.add(new DashboardItem(bitmap, "."));
+            }
+        }
+        for (Field field: fields){
+            String path = field.getName();
+            if (path.startsWith("pic")) {
+                int id = getResources().getIdentifier(path, "drawable", context.getPackageName());
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
+                itemList.add(new DashboardItem(bitmap, "."));
+            }
+        }
         for (Field field: fields){
             String path = field.getName();
             if (path.startsWith("pic")) {
