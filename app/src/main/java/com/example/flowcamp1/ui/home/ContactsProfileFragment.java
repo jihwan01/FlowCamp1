@@ -52,6 +52,7 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 
 public class ContactsProfileFragment extends Fragment {
@@ -62,6 +63,7 @@ public class ContactsProfileFragment extends Fragment {
     private Drawable faceDrawable;
     private Activity activity;
 
+    private ArrayList<String> grantedPermissions = new ArrayList<>();
     private FragmentContactsProfileBinding binding;
     public ContactsProfileFragment(ContactsListFragment contactsListFragment, String id, Drawable face, String name, String phoneNum) {
         this.contactsListFragment = contactsListFragment;
@@ -72,8 +74,13 @@ public class ContactsProfileFragment extends Fragment {
     }
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private ActivityResultLauncher<String> requestCallPermissionLauncher;
+    private ActivityResultLauncher<String> requestVideoCallPermissionLauncher;
     private ActivityResultLauncher<String> requestSendSmsPermissionLauncher;
+    private ActivityResultLauncher<String> requestCameraPermissionLauncher;
+    private ActivityResultLauncher<String> requestRecordAudioPermissionLauncher;
     private ActivityResultLauncher<Intent> pickGalleryLauncher;
+
+
 
     private static final int PERMISSION_REQUEST_CODE = 100;
     private static final int GALLERY_REQUEST_CODE = 200;
@@ -87,9 +94,11 @@ public class ContactsProfileFragment extends Fragment {
                 // 퍼미션이 승인된 경우 갤러리에서 사진을 선택하도록 호출
                 Log.d("Permission", "Permission Request is Granted!!");
                 pickGallery();
+                grantedPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
             } else {
                 // 퍼미션이 거부된 경우에 대한 처리
                 // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                deletePermission(Manifest.permission.READ_EXTERNAL_STORAGE);
                 Log.d("Permission", "Permission Request is denied!!");
             }
         });
@@ -98,10 +107,27 @@ public class ContactsProfileFragment extends Fragment {
             if (isGranted) {
                 // 퍼미션이 승인된 경우 전화 걸기 수행
                 Log.d("Permission", "권한이 충분하여 전화를 걸 수 있습니다!!");
+                grantedPermissions.add(Manifest.permission.CALL_PHONE);
                 MakeCall();
             } else {
                 // 퍼미션이 거부된 경우에 대한 처리
                 // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                deletePermission(Manifest.permission.CALL_PHONE);
+                Log.d("Permission", "Permission Request is denied!!");
+                Log.d("Permission", "권한이 부족하여 전화를 걸 수 없습니다");
+            }
+        });
+
+        requestVideoCallPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // 퍼미션이 승인된 경우 전화 걸기 수행
+                Log.d("Permission", "권한이 충분하여 전화를 걸 수 있습니다!!");
+                grantedPermissions.add(Manifest.permission.CALL_PHONE);
+                MakeVideoCall();
+            } else {
+                // 퍼미션이 거부된 경우에 대한 처리
+                // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                deletePermission(Manifest.permission.CALL_PHONE);
                 Log.d("Permission", "Permission Request is denied!!");
                 Log.d("Permission", "권한이 부족하여 전화를 걸 수 없습니다");
             }
@@ -111,12 +137,40 @@ public class ContactsProfileFragment extends Fragment {
             if (isGranted) {
                 // 퍼미션이 승인된 경우 전화 걸기 수행
                 Log.d("Permission", "권한이 충분하여 문자를 보낼 수 있습니다!!");
+                grantedPermissions.add(Manifest.permission.SEND_SMS);
                 SendSms();
             } else {
                 // 퍼미션이 거부된 경우에 대한 처리
                 // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                deletePermission(Manifest.permission.SEND_SMS);
                 Log.d("Permission", "Permission Request is denied!!");
                 Log.d("Permission", "권한이 부족하여 문자를 보낼 수 없습니다");
+            }
+        });
+
+        requestCameraPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // 퍼미션이 승인된 경우 전화 걸기 수행
+                grantedPermissions.add(Manifest.permission.CAMERA);
+                requestRecordAudioPermission();
+            } else {
+                // 퍼미션이 거부된 경우에 대한 처리
+                // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                deletePermission(Manifest.permission.CAMERA);
+                Log.d("Permission", "Permission Request is denied!!");
+            }
+        });
+
+        requestRecordAudioPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // 퍼미션이 승인된 경우 전화 걸기 수행
+                grantedPermissions.add(Manifest.permission.RECORD_AUDIO);
+                requestVideoCallPermission();
+            } else {
+                // 퍼미션이 거부된 경우에 대한 처리
+                // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                deletePermission(Manifest.permission.RECORD_AUDIO);
+                Log.d("Permission", "Permission Request is denied!!");
             }
         });
 
@@ -320,7 +374,11 @@ public class ContactsProfileFragment extends Fragment {
     }
     private void onVideoCallPressed(){
         Toast.makeText(activity, "video call 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+        // 야매로 permission 요청코드끼리 이어서 만듦
+        requestCameraPermission();
+
     }
+
     private void onDeletePressed(){
         Toast.makeText(getActivity(), "delete button이 클릭되었습니다!", Toast.LENGTH_SHORT).show();
         Log.d("Button Click", "delete button이 클릭되었습니다!");
@@ -387,12 +445,25 @@ public class ContactsProfileFragment extends Fragment {
     private void requestCallPermission() {
         // 퍼미션을 이미 가지고 있는지 확인
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-            // 이미 퍼미션이 승인된 경우 갤러리에서 사진을 선택하도록 호출
+            // 이미 퍼미션이 승인된 경우 전화를 걸도록 호출
+
             MakeCall();
+
         } else {
             // 퍼미션을 요청
             Log.d("GALLERY", "Please grant the permission!!");
             requestCallPermissionLauncher.launch(Manifest.permission.CALL_PHONE);
+        }
+    }
+    private void requestVideoCallPermission() {
+        // 퍼미션을 이미 가지고 있는지 확인
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            // 이미 퍼미션이 승인된 경우 전화를 걸도록 호출
+            MakeVideoCall();
+        } else {
+            // 퍼미션을 요청
+            Log.d("GALLERY", "Please grant the permission!!");
+            requestVideoCallPermissionLauncher.launch(Manifest.permission.CALL_PHONE);
         }
     }
     private void requestSendSmsPermission() {
@@ -404,6 +475,37 @@ public class ContactsProfileFragment extends Fragment {
             // 퍼미션을 요청
             Log.d("GALLERY", "Please grant the permission!!");
             requestSendSmsPermissionLauncher.launch(Manifest.permission.SEND_SMS);
+        }
+    }
+
+    private void requestCameraPermission() {
+        // 퍼미션을 이미 가지고 있는지 확인
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            // 이미 퍼미션이 승인된 경우 갤러리에서 사진을 선택하도록 호출
+            requestRecordAudioPermission();
+        } else {
+            // 퍼미션을 요청
+            Log.d("GALLERY", "Please grant the permission!!");
+            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void requestRecordAudioPermission() {
+        // 퍼미션을 이미 가지고 있는지 확인
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            // 이미 퍼미션이 승인된 경우 갤러리에서 사진을 선택하도록 호출
+            requestVideoCallPermission();
+        } else {
+            // 퍼미션을 요청
+            Log.d("GALLERY", "Please grant the permission!!");
+            requestRecordAudioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
+        }
+    }
+
+    private void deletePermission(String permission){
+        int index = grantedPermissions.indexOf(permission);
+        if (index != -1) {
+            grantedPermissions.remove(index);
         }
     }
 
@@ -426,6 +528,13 @@ public class ContactsProfileFragment extends Fragment {
         Uri uri = Uri.parse("smsto:" + phoneNumStr);
         Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
         intent.putExtra("sms_body", " ");
+        startActivity(intent);
+    }
+
+    private void MakeVideoCall() {
+        Uri uri = Uri.parse("tel:" + phoneNumStr);
+        Intent intent = new Intent(Intent.ACTION_CALL, uri);
+        intent.putExtra("android.telecom.extra.START_CALL_WITH_VIDEO_STATE", 3); // 3: 영상 통화
         startActivity(intent);
     }
 
