@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
@@ -39,6 +40,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -132,6 +134,12 @@ public class ContactsProfileFragment extends Fragment {
                 nameText.setVisibility(View.GONE);
                 editNameText.setVisibility(View.VISIBLE);
                 editNameText.setText(nameText.getText());
+
+                LinearLayout buttons = binding.buttons;
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) buttons.getLayoutParams();
+                params.topToBottom = R.id.profile_name_edit; // 원하는 새로운 제약 조건을 지정합니다.
+                buttons.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+                
                 editNameText.requestFocus();
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(editNameText, InputMethodManager.SHOW_IMPLICIT);
@@ -148,6 +156,13 @@ public class ContactsProfileFragment extends Fragment {
                     nameText.setText(newName);
                     nameText.setVisibility(View.VISIBLE);
                     editNameText.setVisibility(View.GONE);
+
+                    LinearLayout buttons = binding.buttons;
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) buttons.getLayoutParams();
+                    params.topToBottom = R.id.profile_name; // 원하는 새로운 제약 조건을 지정합니다.
+                    buttons.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+                
+
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(editNameText.getWindowToken(), 0);
                     contactsListFragment.ChangeName(idStr, newName);
@@ -168,6 +183,13 @@ public class ContactsProfileFragment extends Fragment {
                 phoneNumText.setVisibility(View.GONE);
                 editNumText.setVisibility(View.VISIBLE);
                 editNumText.setText(phoneNumText.getText());
+
+                TextView emailText = binding.emailText;
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) emailText.getLayoutParams();
+                params.topToBottom = R.id.profile_number_edit; // 원하는 새로운 제약 조건을 지정합니다.
+                emailText.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+                
+
                 editNumText.requestFocus();
                 InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(editNumText, InputMethodManager.SHOW_IMPLICIT);
@@ -183,6 +205,12 @@ public class ContactsProfileFragment extends Fragment {
                     phoneNumText.setText(newNum);
                     phoneNumText.setVisibility(View.VISIBLE);
                     editNumText.setVisibility(View.GONE);
+
+                    TextView emailText = binding.emailText;
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) emailText.getLayoutParams();
+                    params.topToBottom = R.id.profile_number; // 원하는 새로운 제약 조건을 지정합니다.
+                    emailText.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+
                     InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(0, 0);
 
