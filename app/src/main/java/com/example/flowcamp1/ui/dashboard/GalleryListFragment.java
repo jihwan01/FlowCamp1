@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.session.PlaybackState;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -33,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -54,8 +56,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class GalleryListFragment extends Fragment {
@@ -63,7 +68,8 @@ public class GalleryListFragment extends Fragment {
     public GridView mGridView;
     public DashboardAdapter mAdapter;
 
-    ViewGroup rootView;
+    private ViewGroup rootView;
+    private Uri currentPhotoUri;
 
     private void getGalleryPermission(Activity activity, Context context) {
         String temp = "";
@@ -121,11 +127,24 @@ public class GalleryListFragment extends Fragment {
         }
     });
 
+    private Uri createImageUri() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+
+        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = new File(storageDir, imageFileName + ".jpg");
+        return FileProvider.getUriForFile(getContext(), getContext().getApplicationContext().getPackageName() + ".fileprovider", imageFile);
+    }
+
     ActivityResultLauncher<Intent> cameralauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         Intent data = result.getData();
         try {
-            Bundle extras = data.getExtras();
-            Bitmap bitmap = (Bitmap) extras.get("data");
+            //Bundle extras = data.getExtras();
+            //Bitmap bitmap = (Bitmap) extras.get("data");
+            InputStream stream = getContext().getContentResolver().openInputStream(currentPhotoUri);
+            Log.v("test", "2-1");
+            Bitmap bitmap = BitmapFactory.decodeStream(stream);
+            Log.v("test", "2-2");
             saveBitmapToFile(bitmap, "pic" + bitmap.hashCode());
             mAdapter.setBitmap(bitmap, "pic" + bitmap.hashCode());
             mAdapter.notifyDataSetChanged();
@@ -175,8 +194,13 @@ public class GalleryListFragment extends Fragment {
                     builder.setNegativeButton("카메라로 촬영하기", (dialog, which)-> {
                         getCameraPermission(activity, context);
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                        cameralauncher.launch(intent);
+                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            currentPhotoUri = createImageUri();
+                            Log.v("test", currentPhotoUri+".");
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri);
+                            Log.v("test", "1");
+                            cameralauncher.launch(intent);
+                        }
                     });
 
                     builder.setPositiveButton("갤러리에서 가져오기", (dialog, which) -> {
@@ -184,8 +208,9 @@ public class GalleryListFragment extends Fragment {
                         Intent intent = new Intent();
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                        gallerylauncher.launch(intent);
+                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                            gallerylauncher.launch(intent);
+                        }
                     });
 
                     builder.create().show();
