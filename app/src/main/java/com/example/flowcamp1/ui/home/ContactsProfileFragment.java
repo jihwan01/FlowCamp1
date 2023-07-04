@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -234,7 +235,6 @@ public class ContactsProfileFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER ||
                         actionId == EditorInfo.IME_ACTION_DONE) {
-                    Toast.makeText(getActivity(), "Permission Request is Granted!!", Toast.LENGTH_SHORT).show();
                     String newName = editNameText.getText().toString();
                     nameText.setText(newName);
                     nameText.setVisibility(View.VISIBLE);
@@ -351,7 +351,6 @@ public class ContactsProfileFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(activity, "delete 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
                 onDeletePressed();
             }
         });
@@ -361,47 +360,51 @@ public class ContactsProfileFragment extends Fragment {
         Log.d("TAG", "Back Button Clicked!");
     }
     private void onFaceClicked(){
-        Toast.makeText(getActivity(), "ImageView가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
         requestPermission();
     }
     private void onCallPressed(){
-        Toast.makeText(activity, "call 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
         requestCallPermission();
     }
     private void onSmsPressed(){
-        Toast.makeText(activity, "text 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
         requestSendSmsPermission();
     }
     private void onVideoCallPressed(){
-        Toast.makeText(activity, "video call 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
         // 야매로 permission 요청코드끼리 이어서 만듦
         requestCameraPermission();
 
     }
 
     private void onDeletePressed(){
-        Toast.makeText(getActivity(), "delete button이 클릭되었습니다!", Toast.LENGTH_SHORT).show();
-        Log.d("Button Click", "delete button이 클릭되었습니다!");
 
         ContentResolver contentResolver = activity.getContentResolver();
-        String selection = ContactsContract.RawContacts._ID + " = ?";
-        String[] selectionArgs = new String[] { idStr };
+
+        Cursor cur = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                null, ContactsContract.Contacts._ID + " = ?",
+                new String[]{idStr}, null);
 
         try {
-            int deletedContacts = contentResolver.delete(ContactsContract.RawContacts.CONTENT_URI, selection, selectionArgs);
-
-            if (deletedContacts > 0) {
-                Toast.makeText(getActivity(), "연락처 " + deletedContacts + "개" + " 삭제 성공", Toast.LENGTH_SHORT).show();
-                contactsListFragment.initialized = false;
-                goToListFragment();
-            } else {
-                Toast.makeText(getActivity(), "해당 연락처를 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
+            if (cur.moveToFirst()) {
+                int idx = cur.getColumnIndex(
+                        ContactsContract.Contacts.LOOKUP_KEY);
+                if(idx>= 0){
+                    String lookupKey = cur.getString(idx);
+                    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI,
+                            lookupKey);
+                    contentResolver.delete(uri, null, null);
+                    Toast.makeText(getActivity(), "연락처 삭제 성공", Toast.LENGTH_SHORT).show();
+                    contactsListFragment.initialized = false;
+                    goToListFragment();
+                }else{
+                    Toast.makeText(getActivity(), "연락처 삭제 실패", Toast.LENGTH_SHORT).show();
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), "연락처 삭제 실패", Toast.LENGTH_SHORT).show();
             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
     }
     private void goToListFragment(){
         FragmentManager fm = getParentFragmentManager();

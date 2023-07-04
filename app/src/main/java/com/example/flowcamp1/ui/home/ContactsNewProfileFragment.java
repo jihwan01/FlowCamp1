@@ -148,7 +148,6 @@ public class ContactsNewProfileFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER ||
                         actionId == EditorInfo.IME_ACTION_DONE) {
-                    Toast.makeText(getActivity(), "Permission Request is Granted!!", Toast.LENGTH_SHORT).show();
                     String newName = editNameText.getText().toString();
                     nameText.setText(newName);
                     nameText.setVisibility(View.VISIBLE);
@@ -266,7 +265,6 @@ public class ContactsNewProfileFragment extends Fragment {
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
     private void onFaceClicked(){
-        Toast.makeText(getActivity(), "ImageView가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
         requestPermission();
     }
     private void requestPermission() {
