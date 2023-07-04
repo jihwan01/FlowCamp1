@@ -41,6 +41,10 @@ public class NotificationsFragment extends Fragment {
     private int X = -1;
     public int numNonZero;
     public boolean change;
+<<<<<<< Updated upstream
+=======
+    public boolean isNew;
+>>>>>>> Stashed changes
     private FragmentNotificationsBinding binding;
     GestureDetectorCompat mDetector;
     private TextView scoreTextView;
@@ -209,12 +213,31 @@ public class NotificationsFragment extends Fragment {
                 {0, 0, 0, 0}
         };
 
+<<<<<<< Updated upstream
         InitBoard();
+=======
+        for(int i=0; i<16; i++){
+            cellValueMatrix[i/4][i%4] = sharedPref.getInt("cell"+(i+1), 0);
+            editor.putInt("cell"+(i+1), cellValueMatrix[i/4][i%4]);
+        }
+
+        isNew = sharedPref.getBoolean("new", true);
+        if(isNew){
+            InitBoard();
+            editor.putBoolean("new", false);
+            editor.apply();
+        }
+>>>>>>> Stashed changes
         UpdateBoard();
 
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+<<<<<<< Updated upstream
+=======
+                editor.putLong("score", 0);
+                editor.apply();
+>>>>>>> Stashed changes
                 InitScore();
 
                 for(int i=0; i<4; i++){
@@ -233,7 +256,11 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void InitScore() {
+<<<<<<< Updated upstream
         score = 0;
+=======
+        score = sharedPref.getLong("score", 0);
+>>>>>>> Stashed changes
         scoreTextView.setText("Score: "+score);
     }
 
@@ -256,6 +283,13 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void UpdateBoard() {
+<<<<<<< Updated upstream
+=======
+        for(int i=0; i<16; i++){
+            editor.putInt("cell"+(i+1), cellValueMatrix[i/4][i%4]);
+        }
+        editor.apply();
+>>>>>>> Stashed changes
         for(int i=0; i<4; i++){
             for(int j=0; j<4; j++){
                 cellTextViewMatrix[i][j].setText(""+cellValueMatrix[i][j]);
@@ -616,6 +650,11 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void setScore() {
+<<<<<<< Updated upstream
+=======
+        editor.putLong("score", score);
+        editor.apply();
+>>>>>>> Stashed changes
         scoreTextView.setText("Score: "+score);
         if(score > sharedPref.getLong("highScore", 0)){
             editor.putLong("highScore", score);
