@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
@@ -40,6 +41,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,7 +59,7 @@ import java.util.ArrayList;
 public class ContactsNewProfileFragment extends Fragment {
     private ContactsListFragment contactsListFragment;
     private String nameStr = "Default";
-    private String phoneNumStr = "010-4094-6985";
+    private String phoneNumStr = "010-0000-0000";
     private Drawable faceDrawable;
 
     private FragmentContactsNewProfileBinding binding;
@@ -130,6 +132,12 @@ public class ContactsNewProfileFragment extends Fragment {
                 editNameText.setVisibility(View.VISIBLE);
                 editNameText.setText(nameText.getText());
                 editNameText.requestFocus();
+
+                TextView phoneNumText = binding.phoneNumText;
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) phoneNumText.getLayoutParams();
+                params.topToBottom = R.id.profile_name_edit; // 원하는 새로운 제약 조건을 지정합니다.
+                phoneNumText.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(editNameText, InputMethodManager.SHOW_IMPLICIT);
             }
@@ -145,6 +153,12 @@ public class ContactsNewProfileFragment extends Fragment {
                     nameText.setText(newName);
                     nameText.setVisibility(View.VISIBLE);
                     editNameText.setVisibility(View.GONE);
+
+                    TextView phoneNumText = binding.phoneNumText;
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) phoneNumText.getLayoutParams();
+                    params.topToBottom = R.id.profile_name; // 원하는 새로운 제약 조건을 지정합니다.
+                    phoneNumText.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(editNameText.getWindowToken(), 0);
                     nameStr = newName;

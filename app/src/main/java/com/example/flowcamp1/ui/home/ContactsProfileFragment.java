@@ -267,10 +267,10 @@ public class ContactsProfileFragment extends Fragment {
                 editNumText.setVisibility(View.VISIBLE);
                 editNumText.setText(phoneNumText.getText());
 
-                TextView emailText = binding.emailText;
-                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) emailText.getLayoutParams();
+                Button deleteButton = binding.deleteBtn;
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) deleteButton.getLayoutParams();
                 params.topToBottom = R.id.profile_number_edit; // 원하는 새로운 제약 조건을 지정합니다.
-                emailText.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+                deleteButton.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
                 
 
                 editNumText.requestFocus();
@@ -289,10 +289,10 @@ public class ContactsProfileFragment extends Fragment {
                     phoneNumText.setVisibility(View.VISIBLE);
                     editNumText.setVisibility(View.GONE);
 
-                    TextView emailText = binding.emailText;
-                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) emailText.getLayoutParams();
+                    Button deleteButton = binding.deleteBtn;
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) deleteButton.getLayoutParams();
                     params.topToBottom = R.id.profile_number; // 원하는 새로운 제약 조건을 지정합니다.
-                    emailText.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+                    deleteButton.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
 
                     InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(0, 0);
@@ -325,9 +325,9 @@ public class ContactsProfileFragment extends Fragment {
     }
 
     private void addClickListenerForButtonsGroup(){
-        Button callButton = binding.callBtn;
-        Button textButton = binding.textBtn;
-        Button videoCallButton = binding.videoCallBtn;
+        ImageButton callButton = binding.callBtn;
+        ImageButton textButton = binding.textBtn;
+        ImageButton videoCallButton = binding.videoCallBtn;
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

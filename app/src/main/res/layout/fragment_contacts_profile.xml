@@ -25,6 +25,7 @@
         android:text="Default"
         android:textSize="40sp"
         android:textStyle="bold"
+        android:textColor="@android:color/black"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,29 +57,41 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_name">
 
 
-        <Button
+        <ImageButton
             android:id="@+id/call_btn"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
             android:layout_margin="10dp"
-            android:text="Call" />
+            android:text="Call"
+            android:src="@drawable/telephone_white"
+            android:background="@drawable/round_button"
+            android:scaleType="centerInside"
+            android:padding="9dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/text_btn"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
             android:layout_margin="10dp"
-            android:text="Text" />
+            android:text="SMS"
+            android:src="@drawable/mail"
+            android:background="@drawable/round_button"
+            android:scaleType="centerInside"
+            android:padding="6dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/video_call_btn"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
             android:layout_margin="10dp"
-            android:text="Video" />
+            android:text="VIDEO"
+            android:src="@drawable/video_calling"
+            android:background="@drawable/round_button"
+            android:scaleType="centerInside"
+            android:padding="2dp" />
 
     </LinearLayout>
 
@@ -101,7 +114,7 @@
         android:layout_height="wrap_content"
         android:text="010-4094-6985"
         android:textSize="35sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@android:color/black"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         app:layout_constraintHorizontal_bias="0.5"
@@ -126,52 +139,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phone_num_text"
-        />
-
-    <TextView
-        android:id="@+id/email_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:layout_marginStart="15dp"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_number" />
-    <TextView
-        android:id="@+id/profile_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="dhwlghksy@gmail.com"
-        android:textSize="25sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_text"
-        />
-    <EditText
-        android:id="@+id/profile_email_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="dhwlghksy@gmail.com"
-        android:textSize="25sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:inputType="number"
-        android:visibility="gone"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_text"
+        app:layout_constraintBottom_toTopOf="@+id/delete_btn"
         />
 
     <Button
@@ -182,7 +150,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@android:color/darker_gray"
-        app:layout_constraintTop_toBottomOf="@id/profile_email"
+        app:layout_constraintTop_toBottomOf="@id/profile_number"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         android:layout_marginLeft="10dp"
