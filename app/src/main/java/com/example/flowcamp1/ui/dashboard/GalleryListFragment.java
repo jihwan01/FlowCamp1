@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ActionMode;
@@ -46,10 +47,15 @@ import com.example.flowcamp1.databinding.FragmentDashboardBinding;
 import com.example.flowcamp1.ui.home.ContactsProfileFragment;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class GalleryListFragment extends Fragment {
 
@@ -102,7 +108,8 @@ public class GalleryListFragment extends Fragment {
             InputStream stream = getContext().getContentResolver().openInputStream(data.getData());
             Bitmap bitmap = BitmapFactory.decodeStream(stream);
             stream.close();
-            mAdapter.setBitmap(bitmap);
+            saveBitmapToFile(bitmap, "pic" + bitmap.hashCode());
+            mAdapter.setBitmap(bitmap, "pic" + bitmap.hashCode());
             mAdapter.notifyDataSetChanged();
 
         } catch (Exception e) {
@@ -115,13 +122,35 @@ public class GalleryListFragment extends Fragment {
         try {
             Bundle extras = data.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
-            mAdapter.setBitmap(bitmap);
+            saveBitmapToFile(bitmap, "pic" + bitmap.hashCode());
+            mAdapter.setBitmap(bitmap, "pic" + bitmap.hashCode());
             mAdapter.notifyDataSetChanged();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     });
+
+    private void saveBitmapToFile(Bitmap bitmap, String filename) {
+        Context context = getContext();
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + filename + ".png");
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            Log.v("test", Environment.DIRECTORY_PICTURES);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
     private void initMenu(MenuHost menuhost){
         menuhost.addMenuProvider(new MenuProvider() {
@@ -187,12 +216,25 @@ public class GalleryListFragment extends Fragment {
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_gallery_list, container, false);
         mGridView = rootView.findViewById(R.id.gallery);
 
-        for(int i = 1; i <= 5; i++) {
-            Class<R.drawable> drawable = R.drawable.class;
-            String path = "pic" + Integer.toString(i);
-            int id = getResources().getIdentifier(path, "drawable", context.getPackageName());
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
-            itemList.add(new DashboardItem(bitmap));
+        Field[] fields = R.drawable.class.getFields();
+        for (Field field: fields){
+            String path = field.getName();
+            if (path.startsWith("pic")) {
+                int id = getResources().getIdentifier(path, "drawable", context.getPackageName());
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
+                itemList.add(new DashboardItem(bitmap, "."));
+            }
+        }
+
+        try {
+            File[] files = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).listFiles();
+            for(File file:files) {
+                FileInputStream fis = new FileInputStream(file);
+                Bitmap bitmap = BitmapFactory.decodeStream(fis);
+                itemList.add(new DashboardItem(bitmap, file.getName()));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         mAdapter = new DashboardAdapter(context, itemList);

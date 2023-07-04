@@ -5,6 +5,7 @@ import static androidx.core.content.ContextCompat.getSystemService;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 
 import com.example.flowcamp1.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,12 +58,17 @@ public class DashboardAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void setBitmap(Bitmap image){
-        this.mItem.add(new DashboardItem(image));
+    public void setBitmap(Bitmap image, String name){
+        this.mItem.add(new DashboardItem(image, name));
     }
 
     public Bitmap getBitmap(int pos){
         return this.mItem.get(pos).getImageId();
     }
-    public void delBitmap(int pos) { this.mItem.remove(pos); }
+
+    public String getBitmapName(int pos) { return this.mItem.get(pos).getImageName(); }
+    public void delBitmap(int pos) {
+        File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), getBitmapName(pos));
+        file.delete();
+        this.mItem.remove(pos); }
 }

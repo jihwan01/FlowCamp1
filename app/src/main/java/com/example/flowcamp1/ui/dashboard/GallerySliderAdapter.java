@@ -20,7 +20,6 @@ public class GallerySliderAdapter extends RecyclerView.Adapter<GallerySliderAdap
     public int pos;
 
     public GallerySliderAdapter(int pos, DashboardAdapter mAdapter){
-        Log.d("test",pos+"...");
         this.pos = pos;
         this.mAdapter = mAdapter;
     }
@@ -35,7 +34,6 @@ public class GallerySliderAdapter extends RecyclerView.Adapter<GallerySliderAdap
     @Override
     public void onBindViewHolder(@NonNull GallerySliderAdapter.ViewHolder holder, int i){
         holder.imageView.setImageBitmap(mAdapter.getBitmap(i));
-        Log.d("test",i+"....");
     }
 
     @Override
