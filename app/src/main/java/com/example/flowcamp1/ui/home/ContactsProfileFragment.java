@@ -26,6 +26,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 
 import android.provider.ContactsContract;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -71,6 +72,7 @@ public class ContactsProfileFragment extends Fragment {
     }
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private ActivityResultLauncher<String> requestCallPermissionLauncher;
+    private ActivityResultLauncher<String> requestSendSmsPermissionLauncher;
     private ActivityResultLauncher<Intent> pickGalleryLauncher;
 
     private static final int PERMISSION_REQUEST_CODE = 100;
@@ -102,6 +104,19 @@ public class ContactsProfileFragment extends Fragment {
                 // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
                 Log.d("Permission", "Permission Request is denied!!");
                 Log.d("Permission", "권한이 부족하여 전화를 걸 수 없습니다");
+            }
+        });
+
+        requestSendSmsPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // 퍼미션이 승인된 경우 전화 걸기 수행
+                Log.d("Permission", "권한이 충분하여 문자를 보낼 수 있습니다!!");
+                SendSms();
+            } else {
+                // 퍼미션이 거부된 경우에 대한 처리
+                // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                Log.d("Permission", "Permission Request is denied!!");
+                Log.d("Permission", "권한이 부족하여 문자를 보낼 수 없습니다");
             }
         });
 
@@ -268,7 +283,7 @@ public class ContactsProfileFragment extends Fragment {
         textButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onTextPressed();
+                onSmsPressed();
             }
         });
         videoCallButton.setOnClickListener(new View.OnClickListener() {
@@ -299,8 +314,9 @@ public class ContactsProfileFragment extends Fragment {
         Toast.makeText(activity, "call 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
         requestCallPermission();
     }
-    private void onTextPressed(){
+    private void onSmsPressed(){
         Toast.makeText(activity, "text 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+        requestSendSmsPermission();
     }
     private void onVideoCallPressed(){
         Toast.makeText(activity, "video call 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
@@ -379,6 +395,17 @@ public class ContactsProfileFragment extends Fragment {
             requestCallPermissionLauncher.launch(Manifest.permission.CALL_PHONE);
         }
     }
+    private void requestSendSmsPermission() {
+        // 퍼미션을 이미 가지고 있는지 확인
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            // 이미 퍼미션이 승인된 경우 갤러리에서 사진을 선택하도록 호출
+            SendSms();
+        } else {
+            // 퍼미션을 요청
+            Log.d("GALLERY", "Please grant the permission!!");
+            requestSendSmsPermissionLauncher.launch(Manifest.permission.SEND_SMS);
+        }
+    }
 
     private void pickGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -395,11 +422,10 @@ public class ContactsProfileFragment extends Fragment {
 //        Log.d("Call", "전화를 걸게요!!");
     }
 
-    private void SendMessage() {
-        Uri smsUri = Uri.parse("tel:" + phoneNumStr);
-        Intent intent = new Intent(Intent.ACTION_SENDTO, smsUri);
-        intent.putExtra("sms_body", "Hello World!");
-
+    private void SendSms() {
+        Uri uri = Uri.parse("smsto:" + phoneNumStr);
+        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+        intent.putExtra("sms_body", " ");
         startActivity(intent);
     }
 
