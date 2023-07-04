@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,11 +18,11 @@ import com.example.flowcamp1.R;
 import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
-    private ArrayList<RecyclerItem> mData = null;
-    // 생성자에서 데이터 리스트 객체를 전달받음.
     RecyclerAdapter(ArrayList<RecyclerItem> list) {
+    // 생성자에서 데이터 리스트 객체를 전달받음.
         mData = list;
     }
+    private ArrayList<RecyclerItem> mData = null;
 
 
     public interface OnItemClickListener {
@@ -34,14 +35,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView name;
+        TextView phoneNum;
         ImageView face;
-
+        ImageButton infoBtn;
         ViewHolder(View itemView) {
             super(itemView) ;
 
             // 뷰 객체에 대한 참조. (hold strong reference)
             name = itemView.findViewById(R.id.name);
+            phoneNum = itemView.findViewById(R.id.phoneNum);
             face = itemView.findViewById(R.id.face);
+            infoBtn = itemView.findViewById(R.id.video_call_btn);
         }
     }
 
@@ -63,7 +67,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //        RecyclerItem item = mData.get(position);
 //        holder.name.setText(item.getName());
 //        holder.age.setText(item.getAge());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.infoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("TAG", "Item in recycler view is clicked!!");
@@ -77,6 +81,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         RecyclerItem item = mData.get(position) ;
         holder.face.setImageDrawable(item.getFace()); ;
         holder.name.setText(item.getName()) ;
+        String phoneNum = item.getPhoneNum();
+        String digits = phoneNum.replaceAll("\\D", "");
+        if(digits.length() >= 8){
+            phoneNum = digits.substring(0,3) + "-" + digits.substring(3, 7) + "-" + digits.substring(7);
+        }else if(digits.length() >=4){
+            phoneNum = digits.substring(0,3) + "-" + digits.substring(3);
+        }else {
+            phoneNum = digits;
+        }
+        holder.phoneNum.setText(phoneNum);
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴.
