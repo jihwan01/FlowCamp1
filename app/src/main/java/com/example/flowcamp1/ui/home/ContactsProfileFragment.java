@@ -70,6 +70,7 @@ public class ContactsProfileFragment extends Fragment {
         this.phoneNumStr = phoneNum;
     }
     private ActivityResultLauncher<String> requestPermissionLauncher;
+    private ActivityResultLauncher<String> requestCallPermissionLauncher;
     private ActivityResultLauncher<Intent> pickGalleryLauncher;
 
     private static final int PERMISSION_REQUEST_CODE = 100;
@@ -88,6 +89,19 @@ public class ContactsProfileFragment extends Fragment {
                 // 퍼미션이 거부된 경우에 대한 처리
                 // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
                 Log.d("Permission", "Permission Request is denied!!");
+            }
+        });
+
+        requestCallPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // 퍼미션이 승인된 경우 전화 걸기 수행
+                Log.d("Permission", "권한이 충분하여 전화를 걸 수 있습니다!!");
+                MakeCall();
+            } else {
+                // 퍼미션이 거부된 경우에 대한 처리
+                // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
+                Log.d("Permission", "Permission Request is denied!!");
+                Log.d("Permission", "권한이 부족하여 전화를 걸 수 없습니다");
             }
         });
 
@@ -283,7 +297,7 @@ public class ContactsProfileFragment extends Fragment {
     }
     private void onCallPressed(){
         Toast.makeText(activity, "call 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
-
+        requestCallPermission();
     }
     private void onTextPressed(){
         Toast.makeText(activity, "text 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
@@ -354,6 +368,17 @@ public class ContactsProfileFragment extends Fragment {
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
     }
+    private void requestCallPermission() {
+        // 퍼미션을 이미 가지고 있는지 확인
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            // 이미 퍼미션이 승인된 경우 갤러리에서 사진을 선택하도록 호출
+            MakeCall();
+        } else {
+            // 퍼미션을 요청
+            Log.d("GALLERY", "Please grant the permission!!");
+            requestCallPermissionLauncher.launch(Manifest.permission.CALL_PHONE);
+        }
+    }
 
     private void pickGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -361,6 +386,21 @@ public class ContactsProfileFragment extends Fragment {
         pickGalleryLauncher.launch(intent);
         Log.d("GALLERY", "Please Pick a pic from gallery!!");
 
+    }
+
+    private void MakeCall() {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel:" + phoneNumStr));
+        startActivity(intent);
+//        Log.d("Call", "전화를 걸게요!!");
+    }
+
+    private void SendMessage() {
+        Uri smsUri = Uri.parse("tel:" + phoneNumStr);
+        Intent intent = new Intent(Intent.ACTION_SENDTO, smsUri);
+        intent.putExtra("sms_body", "Hello World!");
+
+        startActivity(intent);
     }
 
     private Drawable getDrawableFromUri(Uri uri) throws IOException {
