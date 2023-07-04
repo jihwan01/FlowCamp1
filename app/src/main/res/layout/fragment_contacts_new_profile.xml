@@ -43,44 +43,6 @@
         android:visibility="gone"
         />
 
-    <LinearLayout
-        android:id="@+id/buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_name">
-
-
-        <Button
-            android:id="@+id/call_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:text="Call" />
-
-        <Button
-            android:id="@+id/text_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:text="Text" />
-
-        <Button
-            android:id="@+id/video_call_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:text="Video" />
-
-    </LinearLayout>
 
     <TextView
         android:id="@+id/phone_num_text"
@@ -94,7 +56,7 @@
         app:layout_constraintVertical_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttons" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_name" />
     <TextView
         android:id="@+id/profile_number"
         android:layout_width="wrap_content"
@@ -173,22 +135,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_text"
         />
-
-    <Button
-        android:id="@+id/delete_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="삭제"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintTop_toBottomOf="@id/profile_email"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
 
