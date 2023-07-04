@@ -9,4 +9,12 @@
         android:enabled="true"
         android:checked="true"
         />
+    <item
+        android:id="@+id/gallery_del"
+        app:showAsAction="always"
+        android:icon="@drawable/del"
+        android:iconTint="@color/white"
+        android:enabled="true"
+        android:checked="true"
+        />
 </menu>
