@@ -44,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.flowcamp1.R;
+import com.example.flowcamp1.databinding.FragmentContactsNewProfileBinding;
 import com.example.flowcamp1.databinding.FragmentContactsProfileBinding;
 
 import org.w3c.dom.Text;
@@ -59,7 +60,7 @@ public class ContactsNewProfileFragment extends Fragment {
     private String phoneNumStr = "010-4094-6985";
     private Drawable faceDrawable;
 
-    private FragmentContactsProfileBinding binding;
+    private FragmentContactsNewProfileBinding binding;
     public ContactsNewProfileFragment(ContactsListFragment contactsListFragment) {
         this.contactsListFragment = contactsListFragment;
     }
@@ -116,7 +117,7 @@ public class ContactsNewProfileFragment extends Fragment {
 
         MenuHost menuhost = requireActivity();
         initMenu(menuhost);
-        binding = FragmentContactsProfileBinding.inflate(inflater, container, false);
+        binding = FragmentContactsNewProfileBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         TextView nameText = binding.profileName;
@@ -201,9 +202,6 @@ public class ContactsNewProfileFragment extends Fragment {
                 // ImageView가 클릭되었을 때 실행되는 코드를 여기에 추가합니다.
             }
         });
-
-
-
         return view;
     }
 

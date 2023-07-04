@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/profile_pic"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp"
         android:src="@drawable/user_icon"
-        android:gravity="center"
-        android:layout_gravity="center"
-        />
+        app:layout_constraintBottom_toTopOf="@+id/profile_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/profile_name"
@@ -21,9 +25,10 @@
         android:text="Default"
         android:textSize="40sp"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_gravity="center"
-        />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_pic" />
     <EditText
         android:id="@+id/profile_name_edit"
         android:layout_width="wrap_content"
@@ -31,34 +36,104 @@
         android:text="Default"
         android:textSize="40sp"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_gravity="center"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_pic"
         android:visibility="gone"
         />
+
+
+    <TextView
+        android:id="@+id/phone_num_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phone Number"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginStart="15dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_name" />
     <TextView
         android:id="@+id/profile_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="010-4094-6985"
-        android:textSize="30sp"
+        android:textSize="35sp"
         android:textColor="@android:color/darker_gray"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone_num_text"
         />
     <EditText
         android:id="@+id/profile_number_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="010-4094-6985"
-        android:textSize="30sp"
+        android:textSize="35sp"
         android:textColor="@android:color/darker_gray"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:inputType="number"
         android:visibility="gone"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone_num_text"
         />
 
-
-</LinearLayout>
+    <TextView
+        android:id="@+id/email_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginStart="15dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_number" />
+    <TextView
+        android:id="@+id/profile_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="dhwlghksy@gmail.com"
+        android:textSize="25sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email_text"
+        />
+    <EditText
+        android:id="@+id/profile_email_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="dhwlghksy@gmail.com"
+        android:textSize="25sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:inputType="number"
+        android:visibility="gone"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email_text"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -119,13 +119,9 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             requestContactsWritePermission();
         }else {
             // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
-            Toast.makeText(getActivity(), "This is the length of mList : " + mList.size(), Toast.LENGTH_SHORT).show();
             if(mAdapter != null){
                 binding.recycler1.setAdapter(mAdapter);
             }
-//            mAdapter = new RecyclerAdapter(mList) ;
-//            mAdapter.setOnItemClickListener(this);
-            Toast.makeText(getActivity(), "Already Initialized!!", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -286,8 +282,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
     @Override
     public void onItemClick(int position) {
-        // TODO : Handle the item click event
-
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(this, mList.get(position).getId(), mList.get(position).getFace(), mList.get(position).getName(), mList.get(position).getPhoneNum()));
@@ -298,15 +292,13 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 //        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.puzzle);
 //        addItem(drawable, "first");
     }
-
     private void onAddClick() {
-        // TODO : Handle the item click event
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        Drawable faceDrawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
         fragmentTransaction.replace(R.id.fragmentContainer, new ContactsNewProfileFragment(this));
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        Log.d("TAG", "Add Button is clicked!");
     }
 
 
@@ -396,7 +388,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             cursor.close();
         }
         // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
-        Toast.makeText(getActivity(), "This is the length of mList : " + mList.size(), Toast.LENGTH_SHORT).show();
         mAdapter = new RecyclerAdapter(mList) ;
         mAdapter.setOnItemClickListener(this);
         binding.recycler1.setAdapter(mAdapter);
