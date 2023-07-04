@@ -45,6 +45,7 @@ import com.example.flowcamp1.MainActivity;
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentDashboardBinding;
 import com.example.flowcamp1.ui.home.ContactsProfileFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -89,6 +90,9 @@ public class GalleryListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
         Context context = container.getContext();
+
+        BottomNavigationView bottomNavigationView = activity.findViewById(R.id.nav_view);
+        bottomNavigationView.setVisibility(View.VISIBLE);
 
         MenuHost menuhost = requireActivity();
         initMenu(menuhost);
