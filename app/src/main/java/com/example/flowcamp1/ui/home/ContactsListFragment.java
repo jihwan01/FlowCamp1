@@ -289,8 +289,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         fragmentTransaction.commit();
         Log.d("TAG", "Clicked Item : " + mList.get(position).getName());
 
-//        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.puzzle);
-//        addItem(drawable, "first");
     }
     private void onAddClick() {
         FragmentManager fm = getParentFragmentManager();

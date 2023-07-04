@@ -1,6 +1,7 @@
 package com.example.flowcamp1.ui.home;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -54,6 +57,7 @@ public class ContactsProfileFragment extends Fragment {
     private String nameStr;
     private String phoneNumStr;
     private Drawable faceDrawable;
+    private Activity activity;
 
     private FragmentContactsProfileBinding binding;
     public ContactsProfileFragment(ContactsListFragment contactsListFragment, String id, Drawable face, String name, String phoneNum) {
@@ -71,7 +75,7 @@ public class ContactsProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        activity = requireActivity();
         // 퍼미션 요청 결과 처리를 위한 ActivityResultLauncher 초기화
         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (isGranted) {
@@ -121,7 +125,7 @@ public class ContactsProfileFragment extends Fragment {
 
         TextView nameText = binding.profileName;
         final EditText editNameText = binding.profileNameEdit;
-
+        // ---------------------------------Name---------------------------------
         nameText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,7 +156,7 @@ public class ContactsProfileFragment extends Fragment {
                 return false;
             }
         });
-
+        // ---------------------------------Phone Number---------------------------------
         TextView phoneNumText = binding.profileNumber;
         final EditText editNumText = binding.profileNumberEdit;
         PhoneNumberFormattingTextWatcher watcher = new PhoneNumberFormattingTextWatcher(editNumText);
@@ -189,7 +193,7 @@ public class ContactsProfileFragment extends Fragment {
                 return false;
             }
         });
-
+        // ---------------------------------Face Image---------------------------------
         ImageView faceImage = binding.profilePic;
         faceImage.setImageDrawable(faceDrawable);
         faceImage.setOnClickListener(new View.OnClickListener() {
@@ -199,6 +203,9 @@ public class ContactsProfileFragment extends Fragment {
                 // ImageView가 클릭되었을 때 실행되는 코드를 여기에 추가합니다.
             }
         });
+
+        // ---------------------------------Buttons---------------------------------
+        addClickListenerForButtonsGroup();
         nameText.setText(nameStr);
         phoneNumText.setText(phoneNumStr);
 
@@ -206,15 +213,81 @@ public class ContactsProfileFragment extends Fragment {
         return view;
     }
 
+    private void addClickListenerForButtonsGroup(){
+        Button callButton = binding.callBtn;
+        Button textButton = binding.textBtn;
+        Button videoCallButton = binding.videoCallBtn;
+        callButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCallPressed();
+            }
+        });
+        textButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTextPressed();
+            }
+        });
+        videoCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onVideoCallPressed();
+            }
+        });
+
+        Button deleteButton = binding.deleteBtn;
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(activity, "delete 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+                onDeletePressed();
+            }
+        });
+    }
     private void onBackBtnPressed() {
         getActivity().onBackPressed();
         Log.d("TAG", "Back Button Clicked!");
     }
-    private void onFinPressed() {
-        Log.d("TAG", "Finish Button Clicked!");
+    private void onFaceClicked(){
+        Toast.makeText(getActivity(), "ImageView가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+        requestPermission();
     }
+    private void onCallPressed(){
+        Toast.makeText(activity, "call 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
 
-    private void goToListFragment(ContactsListFragment contactsListFragment){
+    }
+    private void onTextPressed(){
+        Toast.makeText(activity, "text 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+    }
+    private void onVideoCallPressed(){
+        Toast.makeText(activity, "video call 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+    }
+    private void onDeletePressed(){
+        Toast.makeText(getActivity(), "delete button이 클릭되었습니다!", Toast.LENGTH_SHORT).show();
+        Log.d("Button Click", "delete button이 클릭되었습니다!");
+
+        ContentResolver contentResolver = activity.getContentResolver();
+        String selection = ContactsContract.RawContacts._ID + " = ?";
+        String[] selectionArgs = new String[] { idStr };
+
+        try {
+            int deletedContacts = contentResolver.delete(ContactsContract.RawContacts.CONTENT_URI, selection, selectionArgs);
+
+            if (deletedContacts > 0) {
+                Toast.makeText(getActivity(), "연락처 " + deletedContacts + "개" + " 삭제 성공", Toast.LENGTH_SHORT).show();
+                contactsListFragment.initialized = false;
+                goToListFragment();
+            } else {
+                Toast.makeText(getActivity(), "해당 연락처를 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "연락처 삭제 실패", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void goToListFragment(){
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, contactsListFragment);
@@ -241,10 +314,7 @@ public class ContactsProfileFragment extends Fragment {
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
-    private void onFaceClicked(){
-        Toast.makeText(getActivity(), "ImageView가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
-        requestPermission();
-    }
+
     private void requestPermission() {
         // 퍼미션을 이미 가지고 있는지 확인
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
