@@ -1,7 +1,10 @@
 package com.example.flowcamp1.ui.home;
 
 import android.Manifest;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +26,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -46,22 +50,18 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 
-public class ContactsProfileFragment extends Fragment {
+public class ContactsNewProfileFragment extends Fragment {
     private ContactsListFragment contactsListFragment;
-    private String idStr;
-    private String nameStr;
-    private String phoneNumStr;
+    private String nameStr = "Default";
+    private String phoneNumStr = "010-4094-6985";
     private Drawable faceDrawable;
 
     private FragmentContactsProfileBinding binding;
-    public ContactsProfileFragment(ContactsListFragment contactsListFragment, String id, Drawable face, String name, String phoneNum) {
+    public ContactsNewProfileFragment(ContactsListFragment contactsListFragment) {
         this.contactsListFragment = contactsListFragment;
-        this.idStr = id;
-        this.faceDrawable = face;
-        this.nameStr = name;
-        this.phoneNumStr = phoneNum;
     }
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private ActivityResultLauncher<Intent> pickGalleryLauncher;
@@ -96,7 +96,7 @@ public class ContactsProfileFragment extends Fragment {
                         Drawable drawable = getDrawableFromUri(selectedImageUri);
                         binding.profilePic.setImageDrawable(drawable);
                         // TODO: 가져온 이미지에 대해서 실제 연락처 상의 데이터를 수정해야함.
-                        contactsListFragment.ModifyFace(idStr, drawable);
+//                        contactsListFragment.ModifyFace(idStr, drawable);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -115,7 +115,7 @@ public class ContactsProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         MenuHost menuhost = requireActivity();
-        initMenu(menuhost, nameStr);
+        initMenu(menuhost);
         binding = FragmentContactsProfileBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
@@ -146,7 +146,8 @@ public class ContactsProfileFragment extends Fragment {
                     editNameText.setVisibility(View.GONE);
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(editNameText.getWindowToken(), 0);
-                    contactsListFragment.ChangeName(idStr, newName);
+                    nameStr = newName;
+//                    contactsListFragment.ChangeName(idStr, newName);
                     return true;
                 }
                 return false;
@@ -181,8 +182,8 @@ public class ContactsProfileFragment extends Fragment {
                     editNumText.setVisibility(View.GONE);
                     InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(0, 0);
-
-                    contactsListFragment.ChangeNum(idStr, newNum);
+                    phoneNumStr = newNum;
+//                    contactsListFragment.ChangeNum(idStr, newNum);
 
                     return true;
                 }
@@ -191,7 +192,8 @@ public class ContactsProfileFragment extends Fragment {
         });
 
         ImageView faceImage = binding.profilePic;
-        faceImage.setImageDrawable(faceDrawable);
+        Drawable defaultFace = ContextCompat.getDrawable(requireContext(), R.drawable.user_icon);
+        faceImage.setImageDrawable(defaultFace);
         faceImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,8 +201,7 @@ public class ContactsProfileFragment extends Fragment {
                 // ImageView가 클릭되었을 때 실행되는 코드를 여기에 추가합니다.
             }
         });
-        nameText.setText(nameStr);
-        phoneNumText.setText(phoneNumStr);
+
 
 
         return view;
@@ -210,8 +211,8 @@ public class ContactsProfileFragment extends Fragment {
         getActivity().onBackPressed();
         Log.d("TAG", "Back Button Clicked!");
     }
-    private void onFinPressed() {
-        Log.d("TAG", "Finish Button Clicked!");
+    private void onAddPressed() {
+        contactsListFragment.addToDataBase(null, nameStr, phoneNumStr);
     }
 
     private void goToListFragment(ContactsListFragment contactsListFragment){
@@ -221,20 +222,22 @@ public class ContactsProfileFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void initMenu(MenuHost menuhost, String name){
+    private void initMenu(MenuHost menuhost){
         menuhost.addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 androidx.appcompat.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setTitle("");
-                menuInflater.inflate(R.menu.contacts_profile_menu, menu);
+                menuInflater.inflate(R.menu.contacts_new_profile_menu, menu);
             }
 
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem){
 
-                if (menuItem.getItemId() == android.R.id.home){
+                if (menuItem.getItemId() == R.id.item_add_button){
+                    onAddPressed();
+                }else if (menuItem.getItemId() == android.R.id.home){
                     onBackBtnPressed();
                 }
                 return true;

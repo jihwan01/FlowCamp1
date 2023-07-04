@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -141,7 +142,51 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
         binding = null;
     }
+    public void addToDataBase(Drawable face, String name, String phoneNum){
+        Log.d("TAG", "Add Button Clicked!");
+        if(face == null){
+            face = ContextCompat.getDrawable(context, R.drawable.user_icon);
+        }else{
+            // TODO : 사진 넣기
+        }
+        Toast.makeText(getActivity(), name, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), phoneNum, Toast.LENGTH_SHORT).show();
+        ContentResolver contentResolver = activity.getContentResolver();
 
+        ContentValues rawContactValues = new ContentValues();
+        rawContactValues.putNull(ContactsContract.RawContacts.ACCOUNT_TYPE);
+        rawContactValues.putNull(ContactsContract.RawContacts.ACCOUNT_NAME);
+
+        Uri rawContactUri = contentResolver.insert(ContactsContract.RawContacts.CONTENT_URI, rawContactValues);
+        Long rawContactId = rawContactUri != null ? Long.parseLong(rawContactUri.getLastPathSegment()) : null;
+
+        ContentValues contactValues = new ContentValues();
+        contactValues.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
+        contactValues.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        contactValues.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name);
+
+        ContentValues phoneValues = new ContentValues();
+        phoneValues.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
+        phoneValues.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        phoneValues.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNum);
+        phoneValues.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
+
+
+        try {
+            contentResolver.insert(ContactsContract.Data.CONTENT_URI, contactValues);
+            contentResolver.insert(ContactsContract.Data.CONTENT_URI, phoneValues);
+            Toast.makeText(getActivity(), "연락처 추가 성공", Toast.LENGTH_SHORT).show();
+            initialized = false;
+            FragmentManager fm = getParentFragmentManager();
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContainer, this);
+            fragmentTransaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "연락처 추가 실패", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
     public void addItem(String id, Drawable face, String name, String phoneNum) {
         RecyclerItem item = new RecyclerItem();
         item.setId(id);
@@ -161,7 +206,8 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         // 변경할 데이터 설정
         ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(selection, selectionArgs)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name);
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE); // MIME 타입 설정
 
         // 변경 작업을 수행할 ArrayList 생성
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
@@ -189,7 +235,8 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         // 변경할 데이터 설정
         ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(selection, selectionArgs)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, newNum);
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, newNum)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE); // MIME 타입 설정
 
         // 변경 작업을 수행할 ArrayList 생성
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
@@ -254,14 +301,12 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
     private void onAddClick() {
         // TODO : Handle the item click event
-
-//        FragmentManager fm = getParentFragmentManager();
-//        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-//        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
-//        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(drawable, "홍길동", "010-0000-0000"));
-//        fragmentTransaction.addToBackStack(null);
-//        fragmentTransaction.commit();
-
+        FragmentManager fm = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        Drawable faceDrawable = ContextCompat.getDrawable(context, R.drawable.user_icon);
+        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsNewProfileFragment(this));
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 
