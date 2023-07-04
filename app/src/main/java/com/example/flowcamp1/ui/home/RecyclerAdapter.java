@@ -18,11 +18,11 @@ import com.example.flowcamp1.R;
 import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
-    private ArrayList<RecyclerItem> mData = null;
-    // 생성자에서 데이터 리스트 객체를 전달받음.
     RecyclerAdapter(ArrayList<RecyclerItem> list) {
+    // 생성자에서 데이터 리스트 객체를 전달받음.
         mData = list;
     }
+    private ArrayList<RecyclerItem> mData = null;
 
 
     public interface OnItemClickListener {

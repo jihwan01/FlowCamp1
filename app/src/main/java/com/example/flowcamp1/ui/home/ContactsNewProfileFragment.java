@@ -224,7 +224,16 @@ public class ContactsNewProfileFragment extends Fragment {
         Log.d("TAG", "Back Button Clicked!");
     }
     private void onAddPressed() {
-        contactsListFragment.addToDataBase(null, nameStr, phoneNumStr);
+        try {
+            contactsListFragment.addToDataBase(null, nameStr, phoneNumStr);
+
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "연락처 추가에 실패하였습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d("Exception", "연락처 추가에 실패하였습니다.");
+            Log.d("Exception", e.getMessage());
+        }
+
     }
 
     private void goToListFragment(ContactsListFragment contactsListFragment){

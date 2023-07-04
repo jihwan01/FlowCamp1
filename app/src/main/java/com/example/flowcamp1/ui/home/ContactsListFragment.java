@@ -91,7 +91,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             if (isGranted) {
                 // 퍼미션이 승인된 경우 List Load
                 Log.d("Permission", "Permission Request is Granted!!");
-
+                onAddClick();
             } else {
                 // 퍼미션이 거부된 경우에 대한 처리
                 // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
@@ -116,7 +116,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
         if(!initialized){
             requestContactsReadPermission();
-            requestContactsWritePermission();
         }else {
             // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
             if(mAdapter != null){
@@ -315,7 +314,8 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem){
 
                 if (menuItem.getItemId() == R.id.item_add_button){
-                    onAddClick();
+                    requestContactsWritePermission();
+
                 }
                 return true;
             }
@@ -412,7 +412,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         // 퍼미션을 이미 가지고 있는지 확인
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
             // 퍼미션을 이미 가지고 있는 경우 Contacts 쓰는 코드 호출
-
+            onAddClick();
         } else {
             // 퍼미션을 요청
             Log.d("GALLERY", "Please grant the Write permission!!");
