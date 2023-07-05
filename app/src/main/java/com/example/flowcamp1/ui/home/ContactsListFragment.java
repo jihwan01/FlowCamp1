@@ -43,13 +43,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.flowcamp1.R;
 import com.example.flowcamp1.databinding.FragmentContactsListBinding;
 
 import java.io.ByteArrayOutputStream;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Locale;
 
 
 public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.OnItemClickListener {
@@ -128,6 +133,21 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
                 new DividerItemDecoration(requireContext(),new LinearLayoutManager(requireActivity()).getOrientation());
         binding.recycler1.addItemDecoration(dividerItemDecoration);
 
+        binding.searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // 검색어를 제출할 때 호출되는 메서드
+                // 검색어를 처리하는 작업을 수행하세요.
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // 검색어가 변경될 때 호출되는 메서드
+                // 검색어를 실시간으로 처리하는 작업을 수행하세요.
+                return true;
+            }
+        });
 
         return root;
     }
@@ -198,7 +218,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         // 연락처 RawContact URI 생성
         String selection = ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
         String[] selectionArgs = new String[]{id, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE};
-        Toast.makeText(activity, id + " 이거 바꾼다", Toast.LENGTH_SHORT).show();
         // 변경할 데이터 설정
         ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(selection, selectionArgs)
@@ -387,6 +406,14 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             }
             cursor.close();
         }
+
+        Collections.sort(mList, new Comparator<RecyclerItem>() {
+            @Override
+            public int compare(RecyclerItem o1, RecyclerItem o2) {
+                return o1.getName()
+                        .compareTo(o2.getName());
+            }
+        });
         // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
         mAdapter = new RecyclerAdapter(mList) ;
         mAdapter.setOnItemClickListener(this);
