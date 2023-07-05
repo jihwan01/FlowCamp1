@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
@@ -40,6 +41,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,7 +59,7 @@ import java.util.ArrayList;
 public class ContactsNewProfileFragment extends Fragment {
     private ContactsListFragment contactsListFragment;
     private String nameStr = "Default";
-    private String phoneNumStr = "010-4094-6985";
+    private String phoneNumStr = "010-0000-0000";
     private Drawable faceDrawable;
 
     private FragmentContactsNewProfileBinding binding;
@@ -130,6 +132,12 @@ public class ContactsNewProfileFragment extends Fragment {
                 editNameText.setVisibility(View.VISIBLE);
                 editNameText.setText(nameText.getText());
                 editNameText.requestFocus();
+
+                TextView phoneNumText = binding.phoneNumText;
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) phoneNumText.getLayoutParams();
+                params.topToBottom = R.id.profile_name_edit; // 원하는 새로운 제약 조건을 지정합니다.
+                phoneNumText.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(editNameText, InputMethodManager.SHOW_IMPLICIT);
             }
@@ -140,11 +148,16 @@ public class ContactsNewProfileFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER ||
                         actionId == EditorInfo.IME_ACTION_DONE) {
-                    Toast.makeText(getActivity(), "Permission Request is Granted!!", Toast.LENGTH_SHORT).show();
                     String newName = editNameText.getText().toString();
                     nameText.setText(newName);
                     nameText.setVisibility(View.VISIBLE);
                     editNameText.setVisibility(View.GONE);
+
+                    TextView phoneNumText = binding.phoneNumText;
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) phoneNumText.getLayoutParams();
+                    params.topToBottom = R.id.profile_name; // 원하는 새로운 제약 조건을 지정합니다.
+                    phoneNumText.setLayoutParams(params); // 변경된 제약 조건을 뷰에 적용합니다.
+
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(editNameText.getWindowToken(), 0);
                     nameStr = newName;
@@ -210,7 +223,16 @@ public class ContactsNewProfileFragment extends Fragment {
         Log.d("TAG", "Back Button Clicked!");
     }
     private void onAddPressed() {
-        contactsListFragment.addToDataBase(null, nameStr, phoneNumStr);
+        try {
+            contactsListFragment.addToDataBase(null, nameStr, phoneNumStr);
+
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "연락처 추가에 실패하였습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d("Exception", "연락처 추가에 실패하였습니다.");
+            Log.d("Exception", e.getMessage());
+        }
+
     }
 
     private void goToListFragment(ContactsListFragment contactsListFragment){
@@ -243,7 +265,6 @@ public class ContactsNewProfileFragment extends Fragment {
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
     private void onFaceClicked(){
-        Toast.makeText(getActivity(), "ImageView가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
         requestPermission();
     }
     private void requestPermission() {

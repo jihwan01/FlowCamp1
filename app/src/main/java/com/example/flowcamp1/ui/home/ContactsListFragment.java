@@ -76,8 +76,9 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         requestContactsReadPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (isGranted) {
                 // 퍼미션이 승인된 경우 List Load
-                Log.d("Permission", "Permission Request is Granted!!");
-                Toast.makeText(getActivity(), "Permission Request is Granted!!", Toast.LENGTH_SHORT).show();
+                // Log.d("Permission", "Permission Request is Granted!!");
+                // Toast.makeText(getActivity(), "Permission Request is Granted!!", Toast.LENGTH_SHORT).show();
+                requestContactsWritePermission();
                 readContacts();
             } else {
                 // 퍼미션이 거부된 경우에 대한 처리
@@ -91,7 +92,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             if (isGranted) {
                 // 퍼미션이 승인된 경우 List Load
                 Log.d("Permission", "Permission Request is Granted!!");
-
             } else {
                 // 퍼미션이 거부된 경우에 대한 처리
                 // TODO: 퍼미션 거부 시 사용자에게 안내 또는 대체 동작 수행
@@ -116,7 +116,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         binding.recycler1.setLayoutManager(new LinearLayoutManager(getContext())) ;
         if(!initialized){
             requestContactsReadPermission();
-            requestContactsWritePermission();
         }else {
             // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
             if(mAdapter != null){
@@ -139,14 +138,11 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         binding = null;
     }
     public void addToDataBase(Drawable face, String name, String phoneNum){
-        Log.d("TAG", "Add Button Clicked!");
         if(face == null){
             face = ContextCompat.getDrawable(context, R.drawable.user_icon);
         }else{
             // TODO : 사진 넣기
         }
-        Toast.makeText(getActivity(), name, Toast.LENGTH_SHORT).show();
-        Toast.makeText(getActivity(), phoneNum, Toast.LENGTH_SHORT).show();
         ContentResolver contentResolver = activity.getContentResolver();
 
         ContentValues rawContactValues = new ContentValues();
@@ -198,7 +194,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         // 연락처 RawContact URI 생성
         String selection = ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
         String[] selectionArgs = new String[]{id, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE};
-
+        Toast.makeText(activity, id + " 이거 바꾼다", Toast.LENGTH_SHORT).show();
         // 변경할 데이터 설정
         ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(selection, selectionArgs)
@@ -315,7 +311,10 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem){
 
                 if (menuItem.getItemId() == R.id.item_add_button){
-                    onAddClick();
+                    if(requestContactsWritePermission()){
+                        onAddClick();
+                    }
+
                 }
                 return true;
             }
@@ -324,7 +323,6 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
     public void readContacts(){
         mList.clear();
-        Toast.makeText(getActivity(), "Read Contacts", Toast.LENGTH_SHORT).show();
         ContentResolver contentResolver = activity.getContentResolver();
         String[] projection = {ContactsContract.CommonDataKinds.Phone.CONTACT_ID
                 ,  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
@@ -400,6 +398,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         // 퍼미션을 이미 가지고 있는지 확인
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
             // 이미 퍼미션이 승인된 경우 갤러리에서 사진을 선택하도록 호출
+            requestContactsWritePermission();
             readContacts();
         } else {
             // 퍼미션을 요청
@@ -408,15 +407,16 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         }
     }
 
-    private void requestContactsWritePermission() {
+    private boolean requestContactsWritePermission() {
         // 퍼미션을 이미 가지고 있는지 확인
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
             // 퍼미션을 이미 가지고 있는 경우 Contacts 쓰는 코드 호출
-
+            return true;
         } else {
             // 퍼미션을 요청
             Log.d("GALLERY", "Please grant the Write permission!!");
             requestContactsWritePermissionLauncher.launch(Manifest.permission.WRITE_CONTACTS);
+            return false;
         }
     }
 }
