@@ -41,6 +41,7 @@ public class NotificationsFragment extends Fragment {
     private int X = -1;
     public int numNonZero;
     public boolean change;
+    public boolean isNew;
     private FragmentNotificationsBinding binding;
     GestureDetectorCompat mDetector;
     private TextView scoreTextView;
@@ -209,12 +210,24 @@ public class NotificationsFragment extends Fragment {
                 {0, 0, 0, 0}
         };
 
-        InitBoard();
+        for(int i=0; i<16; i++){
+            cellValueMatrix[i/4][i%4] = sharedPref.getInt("cell"+(i+1), 0);
+            editor.putInt("cell"+(i+1), cellValueMatrix[i/4][i%4]);
+        }
+
+        isNew = sharedPref.getBoolean("new", true);
+        if(isNew){
+            InitBoard();
+            editor.putBoolean("new", false);
+            editor.apply();
+        }
         UpdateBoard();
 
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                editor.putLong("score", 0);
+                editor.apply();
                 InitScore();
 
                 for(int i=0; i<4; i++){
@@ -233,7 +246,7 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void InitScore() {
-        score = 0;
+        score = sharedPref.getLong("score", 0);
         scoreTextView.setText("Score: "+score);
     }
 
@@ -256,6 +269,10 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void UpdateBoard() {
+        for(int i=0; i<16; i++){
+            editor.putInt("cell"+(i+1), cellValueMatrix[i/4][i%4]);
+        }
+        editor.apply();
         for(int i=0; i<4; i++){
             for(int j=0; j<4; j++){
                 cellTextViewMatrix[i][j].setText(""+cellValueMatrix[i][j]);
@@ -616,6 +633,8 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void setScore() {
+        editor.putLong("score", score);
+        editor.apply();
         scoreTextView.setText("Score: "+score);
         if(score > sharedPref.getLong("highScore", 0)){
             editor.putLong("highScore", score);
