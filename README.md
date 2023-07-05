@@ -80,7 +80,6 @@
   - 실제 탭의 구현은 추가 Fragment들을 만들어 구현한 뒤, Container에 추가 Fragment를 넣어주는 형태로서 위의 목적을 달성하였습니다.
 - 이름, 전화번호를 직접 눌러서 수정 가능하도록 만들기 위해서 TextView와 EditText를 겹쳐놓고 수정할 때와 아닐 때에 따라 번갈아가며 visible을 바꿔줌으로서 구현하였습니다.
 
-## C. 어플리케이션 소개
 ### TAB 2 - 갤러리
 #### Major features
 * 갤러리 보기  
@@ -130,7 +129,7 @@ private void initMenu(MenuHost menuhost){
 * 다중 삭제를 위한 editMode 변수 설정  
 ``DashboardAdapter`` 아이템 클릭 시 스와이프 창으로 이동 / 삭제할 이미지 선택 (SparseBooleanArray 이용) 중에 작업을 선택해 진행합니다. ``GalleryListFragment`` 휴지통 선택 시 편집 모드로 전환 / 선택한 이미지 삭제 중에 작업을 선택해 진행합니다.
 
-* 갤러리에서 스크롤 시 로딩 속도 향상을 위해 Glide() 기능과 Bitmap.createScaledBitmap(bitmap 압축 기능)을 이용하여 저장하였습니다.
+* 갤러리에서 스크롤 시 로딩 속도 향상을 위해 Glide()를 이용하여 저장, bitmap 압축 기능(Bitmap.createScaledBitmap)을 이용하여 GridView에서 나타날 썸네일을 따로 보여줍니다.
 
 
 ### TAB 3 - 2048 게임
