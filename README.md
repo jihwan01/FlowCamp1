@@ -30,6 +30,7 @@
 
 **실행 화면**
 |![KakaoTalk_20230705_160732280](https://github.com/jihwan01/FlowCamp1/assets/61741090/ad29bbab-0eea-46cd-a239-1b84f19e0dfa)|![KakaoTalk_20230705_160732280_01](https://github.com/jihwan01/FlowCamp1/assets/61741090/3f8c62a9-5129-40ba-a349-e1f07d2b819f)|![KakaoTalk_20230705_160732280_02](https://github.com/jihwan01/FlowCamp1/assets/61741090/c5114b2d-9c3a-40f0-9b5f-d1d8e8eca255)|
+| ------ | ------ | ------ |
 
 왼쪽부터 차례로 메인 페이지, 연락처 추가 페이지, 세부 정보 페이지입니다.
 
