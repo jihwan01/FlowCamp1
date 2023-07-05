@@ -31,6 +31,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -122,7 +123,10 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
                 binding.recycler1.setAdapter(mAdapter);
             }
         }
-
+//        binding.recycler1.addItemDecoration(new VerticalSpaceItemDecoration(48));
+        DividerItemDecoration dividerItemDecoration =
+                new DividerItemDecoration(requireContext(),new LinearLayoutManager(requireActivity()).getOrientation());
+        binding.recycler1.addItemDecoration(dividerItemDecoration);
 
 
         return root;
