@@ -6,12 +6,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_vertical"
     android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/gallery_item"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        tools:ignore="MissingConstraints" />
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/gallery_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            tools:ignore="MissingConstraints" />
+
+        <View
+            android:id="@+id/checkmark"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#4D000000" />
+</FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,15 +13,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flowcamp1.R;
 
+import java.util.List;
+
 public class GallerySliderAdapter extends RecyclerView.Adapter<GallerySliderAdapter.ViewHolder> {
 
 
-    public DashboardAdapter mAdapter;
+    public List<DashboardItem> mItem;
     public int pos;
 
-    public GallerySliderAdapter(int pos, DashboardAdapter mAdapter){
+    public GallerySliderAdapter(int pos, List<DashboardItem> mItem){
         this.pos = pos;
-        this.mAdapter = mAdapter;
+        this.mItem = mItem;
     }
 
     @NonNull
@@ -33,12 +35,12 @@ public class GallerySliderAdapter extends RecyclerView.Adapter<GallerySliderAdap
 
     @Override
     public void onBindViewHolder(@NonNull GallerySliderAdapter.ViewHolder holder, int i){
-        holder.imageView.setImageBitmap(mAdapter.getBitmap(i));
+        holder.imageView.setImageBitmap(mItem.get(i).getImageId());
     }
 
     @Override
     public int getItemCount(){
-        return mAdapter.getCount();
+        return mItem.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

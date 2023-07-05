@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -68,8 +69,10 @@ public class GalleryListFragment extends Fragment {
     public GridView mGridView;
     public DashboardAdapter mAdapter;
 
+    private List<DashboardItem> itemList;
     private ViewGroup rootView;
     private Uri currentPhotoUri;
+    private boolean editMode = false;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,9 +112,10 @@ public class GalleryListFragment extends Fragment {
 
         bindGrid(inflater, container, context);
 
-        bindDelete();
+        mAdapter = new DashboardAdapter(context, itemList, getParentFragmentManager(), activity);
+        mGridView.setAdapter(mAdapter);
 
-        bindView();
+        bindDelete();
 
         return rootView;
     }
@@ -177,61 +181,43 @@ public class GalleryListFragment extends Fragment {
 
                     builder.create().show();
                 }
-                /*
+
                 else if (menuItem.getItemId() == R.id.gallery_del) {
-                    final int pos = mGridView.getCheckedItemPosition();
-                    if (pos != -1) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setMessage("사진 삭제하기");
+                    if (editMode) {
+                        List<Integer> checkedPositions = mAdapter.getSelectedPositions();
+                        if (checkedPositions.size() > 0) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setMessage("사진 삭제하기");
 
-                        builder.setNegativeButton("취소", null);
+                            builder.setNegativeButton("취소", null);
 
-                        builder.setPositiveButton("삭제", (dialog, which) -> {
+                            builder.setPositiveButton("삭제", (dialog, which) -> {
+                                for(int i = 0; i < checkedPositions.size(); i++) {
+                                    mAdapter.delBitmap(checkedPositions.get(i));
+                                }
+                                mAdapter.notifyDataSetChanged();
+                            });
 
-                            mAdapter.delBitmap(pos);
-                            mAdapter.notifyDataSetChanged();
-                        });
-
-                        builder.create().show();
+                            builder.create().show();
+                        }
+                        editMode = false;
+                        mAdapter.changeMode(editMode);
+                    }
+                    else {
+                        editMode = true;
+                        mAdapter.changeMode(editMode);
                     }
                 }
-                 */
                 return true;
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     private void bindGrid(LayoutInflater inflater, ViewGroup container, Context context){
-        List<DashboardItem> itemList = new ArrayList<>();
+        itemList = new ArrayList<>();
 
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_gallery_list, container, false);
         mGridView = rootView.findViewById(R.id.gallery);
-
-        Field[] fields = R.drawable.class.getFields();
-        for (Field field: fields){
-            String path = field.getName();
-            if (path.startsWith("pic")) {
-                int id = getResources().getIdentifier(path, "drawable", context.getPackageName());
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
-                itemList.add(new DashboardItem(bitmap, "."));
-            }
-        }
-        for (Field field: fields){
-            String path = field.getName();
-            if (path.startsWith("pic")) {
-                int id = getResources().getIdentifier(path, "drawable", context.getPackageName());
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
-                itemList.add(new DashboardItem(bitmap, "."));
-            }
-        }
-        for (Field field: fields){
-            String path = field.getName();
-            if (path.startsWith("pic")) {
-                int id = getResources().getIdentifier(path, "drawable", context.getPackageName());
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
-                itemList.add(new DashboardItem(bitmap, "."));
-            }
-        }
 
         try {
             File[] files = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).listFiles();
@@ -243,9 +229,6 @@ public class GalleryListFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        mAdapter = new DashboardAdapter(context, itemList);
-        mGridView.setAdapter(mAdapter);
     }
 
     private void bindDelete(){
@@ -266,21 +249,6 @@ public class GalleryListFragment extends Fragment {
                 builder.create().show();
 
                 return true;
-            }
-        });
-    }
-
-    private void bindView(){
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-                FragmentManager fm = getParentFragmentManager();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.replace(R.id.gallery_fragment_container, new GalleryImageFragment(pos, mAdapter));
-                Log.d("test",pos+".");
-                fragmentTransaction.addToBackStack(null);
-
-                fragmentTransaction.commit();
             }
         });
     }
