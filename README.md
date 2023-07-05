@@ -81,6 +81,9 @@
 - 이름, 전화번호를 직접 눌러서 수정 가능하도록 만들기 위해서 TextView와 EditText를 겹쳐놓고 수정할 때와 아닐 때에 따라 번갈아가며 visible을 바꿔줌으로서 구현하였습니다.
 
 ### TAB 3 - 2048 게임
+![Screenshot_20230705-164121_FlowCamp1](https://github.com/jihwan01/FlowCamp1/assets/98662998/f17538b0-6d72-42e4-a63b-2de190c3b840)
+![Screenshot_20230705-164248_FlowCamp1](https://github.com/jihwan01/FlowCamp1/assets/98662998/cbc14304-fa5b-4c1e-80f9-68c56089fdbf)
+![Screenshot_20230705-164318_FlowCamp1](https://github.com/jihwan01/FlowCamp1/assets/98662998/131525f5-3584-45dd-835e-52626290b778)
 
 #### Major features
 
