@@ -24,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
@@ -41,9 +42,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.flowcamp1.R;
@@ -63,12 +66,13 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
     RecyclerView mRecyclerView = null;
     RecyclerAdapter mAdapter = null;
     ArrayList<RecyclerItem> mList = new ArrayList<RecyclerItem>();
+    ArrayList<RecyclerItem> searchResult = new ArrayList<RecyclerItem>();
 
     Activity activity;
     Context context;
 
     boolean initialized = false;
-
+    boolean isSearching = false;
     public ContactsListFragment() {
         // Required empty public constructor
     }
@@ -106,7 +110,7 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
         });
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint({"NotifyDataSetChanged", "ClickableViewAccessibility"})
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         this.activity = requireActivity();
@@ -133,18 +137,33 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
                 new DividerItemDecoration(requireContext(),new LinearLayoutManager(requireActivity()).getOrientation());
         binding.recycler1.addItemDecoration(dividerItemDecoration);
 
+
         binding.searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // 검색어를 제출할 때 호출되는 메서드
-                // 검색어를 처리하는 작업을 수행하세요.
+                // 키보드를 내리기 위해 clearFocus() 메서드를 호출합니다.
+                binding.searchView.clearFocus();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // 검색어가 변경될 때 호출되는 메서드
-                // 검색어를 실시간으로 처리하는 작업을 수행하세요.
+                if(!newText.equals("") && newText != null){
+                    searchResult.clear();
+                    for (RecyclerItem data : mList) {
+                        if (data.getName().contains(newText)) {
+                            searchResult.add(data);
+                        }
+                    }
+                    isSearching = true;
+                    setmAdapter(searchResult);
+
+                }else {
+                    isSearching = false;
+                    setmAdapter(mList);
+                }
+
                 return true;
             }
         });
@@ -301,9 +320,14 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
 
     @Override
     public void onItemClick(int position) {
+
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(this, mList.get(position).getId(), mList.get(position).getFace(), mList.get(position).getName(), mList.get(position).getPhoneNum()));
+        if(!isSearching){
+            fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(this, mList.get(position).getId(), mList.get(position).getFace(), mList.get(position).getName(), mList.get(position).getPhoneNum()));
+        }else{
+            fragmentTransaction.replace(R.id.fragmentContainer, new ContactsProfileFragment(this, searchResult.get(position).getId(), searchResult.get(position).getFace(), searchResult.get(position).getName(), searchResult.get(position).getPhoneNum()));
+        }
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         Log.d("TAG", "Clicked Item : " + mList.get(position).getName());
@@ -415,12 +439,23 @@ public class ContactsListFragment extends Fragment  implements  RecyclerAdapter.
             }
         });
         // 리사이클러뷰에 SimpleTextAdapter 객체 지정.
-        mAdapter = new RecyclerAdapter(mList) ;
+        if(isSearching){
+            isSearching = true;
+            setmAdapter(searchResult);
+        }else{
+            isSearching = false;
+            setmAdapter(mList);
+        }
+
+
+    }
+
+    private void setmAdapter(ArrayList<RecyclerItem> list){
+        mAdapter = new RecyclerAdapter(list) ;
         mAdapter.setOnItemClickListener(this);
         binding.recycler1.setAdapter(mAdapter);
         initialized = true;
     }
-
 
     public void writeContacts(Uri contactUri, ContentValues values){
         context.getContentResolver().update(contactUri, values, null, null);
