@@ -650,11 +650,8 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void setScore() {
-<<<<<<< Updated upstream
-=======
         editor.putLong("score", score);
         editor.apply();
->>>>>>> Stashed changes
         scoreTextView.setText("Score: "+score);
         if(score > sharedPref.getLong("highScore", 0)){
             editor.putLong("highScore", score);
