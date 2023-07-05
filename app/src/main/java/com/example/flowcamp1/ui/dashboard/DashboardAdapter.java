@@ -62,8 +62,9 @@ public class DashboardAdapter extends BaseAdapter {
         }
         ImageView image = convertView.findViewById(R.id.gallery_item);
 
-        Bitmap bitmap = getBitmap(pos);
-        image.setImageBitmap(bitmap);
+
+        Bitmap thumbnail = getThumbnail(pos);
+        image.setImageBitmap(thumbnail);
         
         return convertView;
     }
@@ -86,20 +87,16 @@ public class DashboardAdapter extends BaseAdapter {
             }
         }
     }
-    public void setBitmap(Context context, Uri imageUri){
-        //this.mItem.add(new DashboardItem(image, name));
-        Log.v("test", imageUri+".");
-        Glide.with(context)
+    public void setBitmap(Uri imageUri){
+        Glide.with(mContext)
                 .asBitmap()
                 .load(imageUri)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         String imageName = "pic" + resource.hashCode();
-                        Log.v("test", imageName);
                         saveBitmapToFile(resource, imageName);
                         mItem.add(new DashboardItem(resource, imageName));
-                        Log.v("test", getCount()+".");
                         notifyDataSetChanged();
                     }
                 });
@@ -107,6 +104,10 @@ public class DashboardAdapter extends BaseAdapter {
 
     public Bitmap getBitmap(int pos){
         return this.mItem.get(pos).getImageId();
+    }
+
+    public Bitmap getThumbnail(int pos){
+        return this.mItem.get(pos).getImageThumbnail();
     }
 
     public String getBitmapName(int pos) { return this.mItem.get(pos).getImageName(); }

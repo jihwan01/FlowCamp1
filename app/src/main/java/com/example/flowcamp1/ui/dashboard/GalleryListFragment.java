@@ -71,6 +71,10 @@ public class GalleryListFragment extends Fragment {
     private ViewGroup rootView;
     private Uri currentPhotoUri;
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     private void getGalleryPermission(Activity activity, Context context) {
         String temp = "";
         int permissionForGalleryRead = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -116,7 +120,7 @@ public class GalleryListFragment extends Fragment {
         Intent data = result.getData();
         if (data != null && data.getData() != null) {
             Uri imageUri = data.getData();
-            mAdapter.setBitmap(getContext(), imageUri);
+            mAdapter.setBitmap(imageUri);
         }
     });
 
@@ -131,7 +135,7 @@ public class GalleryListFragment extends Fragment {
 
     ActivityResultLauncher<Intent> cameralauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         Intent data = result.getData();
-        mAdapter.setBitmap(getContext(), currentPhotoUri);
+        mAdapter.setBitmap(currentPhotoUri);
     });
 
 
@@ -156,9 +160,7 @@ public class GalleryListFragment extends Fragment {
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                             currentPhotoUri = createImageUri();
-                            Log.v("test", currentPhotoUri+".");
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri);
-                            Log.v("test", "1");
                             cameralauncher.launch(intent);
                         }
                     });
