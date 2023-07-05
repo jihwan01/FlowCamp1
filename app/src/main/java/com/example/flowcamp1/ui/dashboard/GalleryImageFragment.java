@@ -23,31 +23,31 @@ import com.example.flowcamp1.databinding.FragmentContactsProfileBinding;
 import com.example.flowcamp1.databinding.FragmentDashboardBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
+
 public class GalleryImageFragment extends Fragment {
     ViewPager2 viewPager;
     ViewGroup rootView;
-    public DashboardAdapter mAdapter;
+    private List<DashboardItem> mItem;
     GallerySliderAdapter sliderAdapter;
     boolean orientationsState=true;
     int pos;
 
-    public GalleryImageFragment(int pos, DashboardAdapter mAdapter){
-        this.mAdapter = mAdapter;
+    public GalleryImageFragment(int pos, List<DashboardItem> mItem){
+        this.mItem = mItem;
         this.pos = pos;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                                 ViewGroup container, Bundle savedInstanceState) {
-        //Context context = container.getContext();
-
         super.onCreate(savedInstanceState);
         View decorView = getActivity().getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_gallery_image, container, false);
-        sliderAdapter = new GallerySliderAdapter(pos, mAdapter);
+        sliderAdapter = new GallerySliderAdapter(pos, mItem);
         viewPager = rootView.findViewById(R.id.view_page);
         viewPager.setAdapter(sliderAdapter);
         viewPager.setCurrentItem(pos, false);
